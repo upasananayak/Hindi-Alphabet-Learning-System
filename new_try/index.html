@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Devanagari Practice Mode</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 4px;
+      background-color: #4285f4;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #3367d6;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Devanagari Practice Mode</h1>
+  <button id="startPractice">Start Practice Mode</button>
+  <div id="status">Click the button to start the camera capture for practice.</div>
+
+  <script>
+    const startButton = document.getElementById("startPractice");
+    const statusDiv = document.getElementById("status");
+
+    startButton.addEventListener("click", () => {
+      fetch("http://127.0.0.1:5000/start_practice")
+        .then(response => response.json())
+        .then(data => {
+          statusDiv.innerText = data.status;
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          statusDiv.innerText = "Error starting practice mode.";
+        });
+    });
+  </script>
+</body>
+</html>
+

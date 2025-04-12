@@ -1,0 +1,529 @@
+<!-- <div class="grid-item"><a href="{% url 'test_letter' 1 %}">द</a></div>
+            <div class="grid-item"><a href="{% url 'test_letter' 3 %}">न</a></div>
+            <div class="grid-item"><a href="{% url 'test_letter' 4 %}">प</a></div>
+            <div class="grid-item"><a href="{% url 'test_letter' 5 %}">फ</a></div>
+            <div class="grid-item"><a href="{% url 'test_letter' 6 %}">ल</a></div>
+            <div class="grid-item"><a href="{% url 'test_letter' 7 %}">ख</a></div>
+            <div class="grid-item"><a href="{% url 'test_letter' 8 %}">स</a></div>
+            <div class="grid-item"><a href="{% url 'test_letter' 9 %}">त्र</a></div>
+            <div class="grid-item"><a href="{% url 'test_letter' 10 %}">ग</a></div>
+            <div class="grid-item"><a href="{% url 'test_letter' 11 %}">घ</a></div>
+            <div class="grid-item"><a href="{% url 'test_letter' 12 %}">ङ</a></div>
+            <div class="grid-item"><a href="{% url 'test_letter' 13 %}">च</a></div> -->
+
+
+
+            <!DOCTYPE html>
+<!-- <html>
+<head>
+    <title>Learn {{ letter }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('{% static "background.jpg" %}') no-repeat center center/cover;
+            text-align: center;
+            padding: 50px;
+            position: relative;
+            height: 100vh;
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 40px;
+            color: #fff;
+            background-color: #ff4500;
+            padding: 10px;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-arrow:hover {
+            transform: scale(1.2);
+            background-color: #ff6347; /* Slightly lighter on hover */
+        }
+
+        .container {
+            display: flex;
+            height: 100%;
+        }
+
+        .left-half {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .right-half {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .letter {
+            font-size: 100px; /* Increased font size */
+            font-weight: bold;
+            color: #ff4500;
+            margin-bottom: 20px;
+        }
+
+        .letter-image, .object-image {
+            width: 400px; /* Increased width */
+            height: auto; /* Maintain aspect ratio */
+            margin-bottom: 20px;
+        }
+
+        .button {
+            font-size: 24px;
+            color: #fff;
+            background-color: #ff4500;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .button:hover {
+            background-color: #e5533d;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 820px; /* Same width as images */
+            height: 820px; /* Combined height of two images */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            border: 1px solid #000;
+            width: 100%; /* Full width of container */
+            height: 100%; /* Full height of container */
+            background-color: #fff; /* White background */
+        }
+    </style>
+</head>
+<body>
+    <a href="javascript:history.back()" class="back-arrow">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <div class="container">
+        <div class="left-half">
+            <div class="letter"></div>
+            <img src="{% static letter_image.letter_path %}" alt="{{ letter }}" class="letter-image">
+            {% if letter_image.object_path %}
+                <img src="{% static letter_image.object_path %}" alt="Object for {{ letter }}" class="object-image">
+            {% endif %}
+            <a href="{% url 'letters' %}" class="button">Select Different Letter</a>
+        </div>
+        <div class="right-half">
+            <div class="canvas-container">
+                <canvas id="letterCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for handling the drawing
+        const canvas = document.getElementById('letterCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let drawing = false;
+        canvas.addEventListener('mousedown', () => drawing = true);
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mousemove', draw);
+
+        function draw(event) {
+            if (!drawing) return;
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#000';
+
+            ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+        }
+    </script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Devanagari Character Recognition</title>
+
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: url("{{ url_for('static', filename='background.jpg') }}") no-repeat center center/cover;
+      text-align: center;
+      padding: 50px;
+      position: relative;
+      height: 100vh;
+      /*overflow: hidden; /* Prevent scrolling */
+    }
+
+    .container {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    canvas { 
+      border: 2px solid #333; 
+      margin-bottom: 15px; 
+      background: white;
+      border-radius: 5px;
+      cursor: crosshair;
+    }
+
+    #result { 
+      font-size: 1.2em; 
+      margin-top: 15px; 
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #f0f0f0;
+      min-height: 60px;
+    }
+
+    #probabilities {
+      margin-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .prob-item {
+      padding: 5px 10px;
+      border-radius: 4px;
+      background-color: #e0e0e0;
+      transition: all 0.3s;
+    }
+
+    .prob-item.selected {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    button { 
+      padding: 10px 20px; 
+      margin: 5px; 
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #clearBtn {
+      background-color: #f44336;
+    }
+
+    #clearBtn:hover {
+      background-color: #d32f2f;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .character {
+      font-size: 2em;
+      margin-right: 0.5em;
+    }
+
+    .class-table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      max-width: 700px;
+    }
+
+    .class-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .class-table tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .class-table .char {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .class-label {
+      color: #555;
+      font-size: 0.8em;
+    }
+
+    .image-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+
+    .image-container img {
+      max-width: 200px; /* Set the maximum width for the images */
+      height: auto;
+      margin: 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left-half">
+      {% if letter_path %}
+        <div class="letter" onclick="playLetterSound()"></div>
+        <div class="letter-container">
+            <img src="{{ letter_path }}" alt="{{ letter }}" class="letter-image" onclick="playLetterSound()">
+            <button class="audio-button" onclick="playLetterSound()">
+                <i class="fas fa-volume-up"></i>
+            </button>
+        </div>
+        {% endif %}
+        {% if object_path  %}
+        <div class="letter-container">
+            <img src="{{ object_path }}" alt="Object for {{ letter }}" class="object-image" onclick="playObjectSound()">
+            <button class="audio-button" onclick="playObjectSound()">
+                <i class="fas fa-volume-up"></i>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+    </div>
+  <div class="image-container">
+    {% if letter_path %}
+      <img src="{{ letter_path }}" alt="Letter Image">
+    {% endif %}
+    
+    {% if object_path %}
+      <img src="{{ object_path }}" alt="Object Image">
+    {% endif %}
+  </div>
+  <div class="container">
+
+    <canvas id="drawCanvas" width="280" height="280"></canvas><br>
+    <div class="drawing-tools">
+      <div class="color-tool color-black" onclick="changeColor('#000')" title="Black"></div>
+      <div class="color-tool color-red" onclick="changeColor('#ff0000')" title="Red"></div>
+      <div class="color-tool color-blue" onclick="changeColor('#0000ff')" title="Blue"></div>
+      <div class="color-tool color-green" onclick="changeColor('#008000')" title="Green"></div>
+      <button class="tool-button" onclick="showHint()">
+          <i class="fas fa-lightbulb"></i> Hint
+      </button>
+  </div>
+    <div>
+      <button id="clearBtn">Clear</button>
+      <button id="predictBtn">Predict</button>
+    </div>
+    <div id="result">Draw something and click "Predict"</div>
+    <div id="probabilities"></div>
+  </div>
+  <script>
+    // Class mapping for Devanagari characters
+    const classes = [
+      'ञ', 'ट', 'ठ', 'ड', 'ढ', 'ड़', 'त', 'थ', 'द', 'ध',
+      'क', 'न', 'प', 'फ', 'ब', 'भ', 'म', 'य', 'र', 'ल',
+      'व', 'ख', 'श', 'ष', 'स', 'ह', 'छ', 'त्र', 'ज्ञ', 'ग',
+      'घ', 'ङ', 'च', 'छ', 'ज', 'झ', '०', '१', '२', '३',
+      '४', '५', '६', '७', '८', '९'
+    ];
+
+    const canvas = document.getElementById("drawCanvas");
+    const ctx = canvas.getContext("2d");
+    const resultDiv = document.getElementById("result");
+    const probDiv = document.getElementById("probabilities");
+    let drawing = false;
+    let hasDrawn = false;
+
+    function setupCanvas() {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = 15;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      
+      hasDrawn = false;
+    }
+    
+    setupCanvas();
+
+    function startDrawing(x, y) {
+      drawing = true;
+      hasDrawn = true;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+    
+    function draw(x, y) {
+      if (!drawing) return;
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+    
+    function stopDrawing() {
+      drawing = false;
+    }
+
+    canvas.addEventListener("mousedown", (e) => {
+      startDrawing(e.offsetX, e.offsetY);
+    });
+    
+    canvas.addEventListener("mousemove", (e) => {
+      draw(e.offsetX, e.offsetY);
+    });
+    
+    canvas.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mouseout", stopDrawing);
+
+    canvas.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      startDrawing(touch.clientX - rect.left, touch.clientY - rect.top);
+    });
+    
+    canvas.addEventListener("touchmove", (e) => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      draw(touch.clientX - rect.left, touch.clientY - rect.top);
+    });
+    
+    canvas.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      stopDrawing();
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      setupCanvas();
+      resultDiv.innerText = "Draw something and click \"Predict\"";
+      probDiv.innerHTML = "";
+    });
+
+    document.getElementById("predictBtn").addEventListener("click", () => {
+      if (!hasDrawn) {
+        resultDiv.innerText = "Please draw something first!";
+        return;
+      }
+      
+      resultDiv.innerHTML = '<div>Processing... <span class="loading"></span></div>';
+      
+      const dataURL = canvas.toDataURL("image/png");
+      
+      fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: dataURL })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.error) {
+          resultDiv.innerText = "Error: " + data.error;
+          probDiv.innerHTML = "";
+        } else {
+          
+          const predictedChar = classes[data.predicted_class];
+          
+          resultDiv.innerHTML = 
+            `<div class="character">${predictedChar}</div>` +
+            `<strong>Prediction: ${predictedChar} (Class ${data.predicted_class})</strong><br>` +
+            `Confidence: ${(data.confidence * 100).toFixed(2)}%`;
+          
+          if (data.all_probabilities) {
+            probDiv.innerHTML = "<h3>Top Probabilities:</h3>";
+            
+            const sortedProbabilities = Object.entries(data.all_probabilities)
+              .map(([classIndex, probability]) => ({
+                classIndex: parseInt(classIndex),
+                probability,
+                character: classes[parseInt(classIndex)]
+              }))
+              .sort((a, b) => b.probability - a.probability)
+              .slice(0, 10); 
+            
+            sortedProbabilities.forEach(item => {
+              const percentage = (item.probability * 100).toFixed(2);
+              const isSelected = item.classIndex === data.predicted_class;
+              
+              const div = document.createElement('div');
+              div.className = `prob-item ${isSelected ? 'selected' : ''}`;
+              div.innerHTML = `${item.character} (${item.classIndex}): ${percentage}%`;
+              probDiv.appendChild(div);
+            });
+          }
+        }
+      })
+      .catch(err => {
+        console.error("Error:", err);
+        resultDiv.innerText = "Error connecting to the server. Is the backend running?";
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+

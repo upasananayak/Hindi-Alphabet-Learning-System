@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Devanagari Character Recognition</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+        font-family: 'Comic Sans MS', 'Arial', sans-serif;
+        background: url("{{ url_for('static', filename='background.jpg') }}") no-repeat center center/cover;
+        text-align: center;
+        padding: 20px;
+        position: relative;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .back-arrow {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 50px;
+        color: #fff;
+        background-color: #ff4500;
+        padding: 15px;
+        border-radius: 50%;
+        text-decoration: none;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        z-index: 100;
+    }
+
+    .back-arrow:hover {
+        transform: scale(1.2);
+        background-color: #ff6347;
+    }
+
+    .container {
+        display: flex;
+        height: calc(100vh - 40px);
+        margin-top: 20px;
+    }
+
+    .left-half {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 30px;
+        margin-right: 15px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .right-half {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 30px;
+        margin-left: 15px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .title {
+        font-size: 40px;
+        font-weight: bold;
+        color: #ff4500;
+        margin-bottom: 20px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    .image-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .letter-image, .object-image {
+        width: 280px;
+        height: auto;
+        border-radius: 15px;
+        border: 5px solid #ff9900;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        margin-bottom: 20px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .letter-image:hover, .object-image:hover {
+        transform: scale(1.05);
+    }
+
+    canvas { 
+        border: 5px dashed #ff9900;
+        width: 280px;
+        height: 280px;
+        background: white;
+        border-radius: 15px;
+        cursor: crosshair;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+
+    .drawing-tools {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+        gap: 10px;
+    }
+
+    .tool-button {
+        font-size: 18px;
+        color: #fff;
+        background-color: #1e90ff;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin: 0 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        transition: transform 0.2s ease;
+    }
+
+    .tool-button:hover {
+        transform: scale(1.1);
+        background-color: #187bcd;
+    }
+
+    .color-tool {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        margin: 0 5px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        transition: transform 0.2s ease;
+        border: 3px solid white;
+    }
+
+    .color-tool:hover {
+        transform: scale(1.2);
+    }
+
+    .color-black { background-color: #000; }
+    .color-red { background-color: #ff0000; }
+    .color-blue { background-color: #0000ff; }
+    .color-green { background-color: #008000; }
+
+    .button {
+        font-size: 24px;
+        font-family: 'Comic Sans MS', 'Arial', sans-serif;
+        padding: 10px 20px; 
+        margin: 10px; 
+        background-color: #ff4500;
+        color: white;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: transform 0.2s ease, background-color 0.3s;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .button:hover {
+        background-color: #e5533d;
+        transform: scale(1.1);
+    }
+
+    #clearBtn {
+        background-color: #f44336;
+    }
+
+    #clearBtn:hover {
+        background-color: #d32f2f;
+    }
+
+    #result { 
+        font-size: 1.2em; 
+        margin-top: 15px; 
+        padding: 10px;
+        border-radius: 15px;
+        background-color: #f0f0f0;
+        min-height: 60px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    #probabilities {
+        margin-top: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .prob-item {
+        padding: 5px 10px;
+        border-radius: 10px;
+        background-color: #e0e0e0;
+        transition: all 0.3s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .prob-item.selected {
+        background-color: #4CAF50;
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .character {
+        font-size: 2em;
+        margin-right: 0.5em;
+        color: #ff4500;
+        animation: pulse 2s infinite;
+    }
+
+    .class-table {
+        margin: 20px auto;
+        border-collapse: collapse;
+        max-width: 700px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .class-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .class-table tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .class-table .char {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #ff4500;
+    }
+
+    .class-label {
+        color: #555;
+        font-size: 0.8em;
+    }
+
+    /* Popup styles */
+    .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 700px;
+        padding: 50px;
+        background-color: #fff;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        border-radius: 20px;
+        text-align: center;
+        z-index: 1000;
+        animation: popIn 0.5s ease;
+    }
+
+    @keyframes popIn {
+        0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+        100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+
+    .popup h2 {
+        font-size: 70px;
+        margin-bottom: 20px;
+        font-family: 'Comic Sans MS', 'Arial', sans-serif;
+    }
+
+    .popup .stars {
+        color: gold;
+        font-size: 120px;
+        margin-bottom: 30px;
+        animation: twinkle 1s infinite alternate;
+    }
+
+    @keyframes twinkle {
+        0% { opacity: 0.7; }
+        100% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .popup .close-icon {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 48px;
+        color: #ff4500;
+        cursor: pointer;
+    }
+
+    .popup .close-icon:hover {
+        color: #e5533d;
+        transform: scale(1.2);
+    }
+
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 999;
+    }
+
+    .hint-button {
+        font-size: 18px;
+        color: #fff;
+        background-color: #9932CC;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        transition: transform 0.2s ease;
+    }
+    
+    .hint-button:hover {
+        background-color: #8B008B;
+        transform: scale(1.1);
+    }
+
+    .result-correct {
+        background-color: #DFF2BF;
+        color: #4F8A10;
+        border: 1px solid #4F8A10;
+    }
+
+    .result-incorrect {
+        background-color: #FFBABA;
+        color: #D8000C;
+        border: 1px solid #D8000C;
+    }
+
+    /* New styles for incorrect popup */
+    .popup.incorrect {
+        background-color: #FFF0F0;
+        border: 5px solid #FFBABA;
+    }
+    
+    .popup.incorrect h2 {
+        color: #D8000C;
+    }
+    
+    .popup.incorrect .stars {
+        color: #D8000C;
+    }
+    
+    .popup.correct {
+        background-color: #F0FFF0;
+        border: 5px solid #DFF2BF;
+    }
+    
+    .popup.correct h2 {
+        color: #4F8A10;
+    }
+    
+    .popup.correct .stars {
+        color: gold;
+    }
+    
+    .popup-content {
+        font-size: 24px;
+        margin: 20px 0;
+        line-height: 1.5;
+    }
+    
+    .popup-character {
+        font-size: 80px;
+        margin: 20px 0;
+        animation: pulse 2s infinite;
+    }
+  </style>
+</head>
+<body>
+  <a href="javascript:history.back()" class="back-arrow" title="Go Back">
+    <i class="fas fa-arrow-left"></i>
+  </a>
+  
+  <div class="container">
+    <div class="left-half">
+      <h1 class="title">{{ current_letter }}</h1>
+      <div class="image-container">
+        {% if letter_path %}
+          <img src="{{ letter_path }}" alt="Letter Image" class="letter-image">
+        {% endif %}
+        
+        {% if object_path %}
+          <img src="{{ object_path }}" alt="Object Image" class="object-image">
+        {% endif %}
+      </div>
+      <div id="result"></div>
+      <div id="probabilities"></div>
+    </div>`
+    
+    <div class="right-half">
+      <canvas id="drawCanvas" width="280" height="280"></canvas>
+      <div class="drawing-tools">
+        <button class="tool-button" id="clearBtn">
+          <i class="fas fa-trash-alt"></i> Clear
+        </button>
+        <div class="color-tool color-black" onclick="changeColor('#000')" title="Black"></div>
+        <div class="color-tool color-red" onclick="changeColor('#ff0000')" title="Red"></div>
+        <div class="color-tool color-blue" onclick="changeColor('#0000ff')" title="Blue"></div>
+        <div class="color-tool color-green" onclick="changeColor('#008000')" title="Green"></div>
+        <button class="tool-button" onclick="showHint()">
+          <i class="fas fa-lightbulb"></i> Hint
+        </button>
+      </div>
+      <button class="button" id="predictBtn">
+        <i class="fas fa-magic"></i> Submit
+      </button>
+      <a href="#" id="nextLetterBtn" class="button" style="display: none;">
+        <i class="fas fa-arrow-right"></i> Next Letter
+    </a>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="popup" id="popup">
+    <span class="close-icon" onclick="closePopup()">&times;</span>
+    <h2 id="popupMessage"></h2>
+    <div class="stars" id="stars"></div>
+    <div class="popup-character" id="popupCharacter"></div>
+    <div class="popup-content" id="popupContent"></div>
+  </div>
+  
+  <script>
+    // Class mapping for Devanagari characters
+    const classes = [
+      'ञ', 'ट', 'ठ', 'ड', 'ढ', 'ड़', 'त', 'थ', 'द', 'ध',
+      'क', 'न', 'प', 'फ', 'ब', 'भ', 'म', 'य', 'र', 'ल',
+      'व', 'ख', 'श', 'ष', 'स', 'ह', 'छ', 'त्र', 'ज्ञ', 'ग',
+      'घ', 'ङ', 'च', 'छ', 'ज', 'झ', '०', '१', '२', '३',
+      '४', '५', '६', '७', '८', '९'
+    ];
+
+    // New ordered letters array based on your requirements
+    const orderedLetters = ['द', 'न', 'प', 'फ', 'ल', 'ख', 'स', 'त्र', 'ग', 'घ', 'ङ', 'च'];
+    
+    // Extract order parameter from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderParam = urlParams.get('order') || "1";
+    const orderIndex = parseInt(orderParam) - 1;
+    
+    // Get the current letter from the title or data attribute
+    let currentLetter = document.querySelector('.title').innerText || '{{ current_letter }}';
+    
+    // If we can determine it from the order parameter, override it
+    if (orderIndex >= 0 && orderIndex < orderedLetters.length) {
+      currentLetter = orderedLetters[orderIndex];
+    }
+
+    const canvas = document.getElementById("drawCanvas");
+    const ctx = canvas.getContext("2d");
+    const resultDiv = document.getElementById("result");
+    const probDiv = document.getElementById("probabilities");
+    let drawing = false;
+    let hasDrawn = false;
+    let currentColor = "#000";
+    let isHintShowing = false;
+    let hintImage = new Image();
+
+    function setupCanvas() {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.strokeStyle = currentColor;
+      ctx.lineWidth = 15;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      
+      hasDrawn = false;
+      isHintShowing = false;
+    }
+    
+    setupCanvas();
+
+    function startDrawing(x, y) {
+      drawing = true;
+      hasDrawn = true;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+    
+    function draw(x, y) {
+      if (!drawing) return;
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+    
+    function stopDrawing() {
+      drawing = false;
+      ctx.beginPath();
+    }
+
+    canvas.addEventListener("mousedown", (e) => {
+      startDrawing(e.offsetX, e.offsetY);
+    });
+    
+    canvas.addEventListener("mousemove", (e) => {
+      draw(e.offsetX, e.offsetY);
+    });
+    
+    canvas.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mouseout", stopDrawing);
+
+    canvas.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      startDrawing(touch.clientX - rect.left, touch.clientY - rect.top);
+    });
+    
+    canvas.addEventListener("touchmove", (e) => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      draw(touch.clientX - rect.left, touch.clientY - rect.top);
+    });
+    
+    canvas.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      stopDrawing();
+    });
+
+    function changeColor(color) {
+      currentColor = color;
+      ctx.strokeStyle = color;
+      playColorSound();
+    }
+    
+    function playColorSound() {
+      // Sound effect could be added later
+      console.log("Playing color change sound");
+    }
+    
+    function showHint() {
+      if (!isHintShowing) {
+        isHintShowing = true;
+        
+        // Draw the current letter as a hint
+        ctx.save();
+        ctx.globalAlpha = 0.3;
+        ctx.font = "200px Comic Sans MS";
+        ctx.fillStyle = "#808080";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        
+        // Use the current letter as the hint instead of a random one
+        ctx.fillText(currentLetter, canvas.width/2, canvas.height/2);
+        ctx.restore();
+        
+        playHintSound();
+      } else {
+        isHintShowing = false;
+        setupCanvas();
+      }
+    }
+    
+    function playHintSound() {
+      // Sound effect could be added later
+      console.log("Playing hint sound");
+    }
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      setupCanvas();
+      resultDiv.innerText = "Draw something and click \"Predict\"";
+      resultDiv.className = "";
+      probDiv.innerHTML = "";
+      playEraseSound();
+    });
+    
+    function playEraseSound() {
+      // Sound effect could be added later
+      console.log("Playing erase sound");
+    }
+
+    document.getElementById("predictBtn").addEventListener("click", () => {
+      if (!hasDrawn) {
+        resultDiv.innerText = "Please draw something first!";
+        resultDiv.className = "";
+        return;
+      }
+      
+      resultDiv.innerHTML = '<div>Processing... <span class="loading"></span></div>';
+      resultDiv.className = "";
+      
+      const dataURL = canvas.toDataURL("image/png");
+      
+      fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: dataURL })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+  if (data.error) {
+    resultDiv.innerText = "Error: " + data.error;
+    resultDiv.className = "";
+    probDiv.innerHTML = ""; // Clear probabilities
+  } else {
+    const predictedChar = classes[data.predicted_class];
+    
+    // Check if the prediction matches the current letter
+    const isCorrect = predictedChar === currentLetter;
+    
+    if (isCorrect) {
+      resultDiv.innerHTML = `
+        <strong>Correct! 🎉</strong><br>
+        Great job! You drew the character perfectly!
+      `;
+      resultDiv.className = "result-correct";
+      
+      // Show celebration popup for correct answers
+      showCorrectPopup(currentLetter);
+    } else {
+      resultDiv.innerHTML = `
+        <strong>Not quite right!</strong><br>
+        Please try again!
+      `;
+      resultDiv.className = "result-incorrect";
+      
+      // Show the "try again" popup without revealing the prediction
+      showIncorrectPopup("", currentLetter);
+    }
+    
+    // Comment out or remove this entire block to hide probabilities
+    /*
+    if (data.all_probabilities) {
+      probDiv.innerHTML = "<h3>Top Probabilities:</h3>";
+      
+      const sortedProbabilities = Object.entries(data.all_probabilities)
+        .map(([classIndex, probability]) => ({
+          classIndex: parseInt(classIndex),
+          probability,
+          character: classes[parseInt(classIndex)]
+        }))
+        .sort((a, b) => b.probability - a.probability)
+        .slice(0, 10); 
+      
+      sortedProbabilities.forEach(item => {
+        const percentage = (item.probability * 100).toFixed(2);
+        const isSelected = item.classIndex === data.predicted_class;
+        
+        const div = document.createElement('div');
+        div.className = `prob-item ${isSelected ? 'selected' : ''}`;
+        div.innerHTML = `${item.character} (${item.classIndex}): ${percentage}%`;
+        probDiv.appendChild(div);
+      });
+    }
+    */
+    probDiv.innerHTML = ""; // Clear any existing probabilities
+  }
+})
+      .catch(err => {
+        console.error("Error:", err);
+        resultDiv.innerText = "Error connecting to the server. Is the backend running?";
+        resultDiv.className = "";
+      });
+    });
+    
+    // Enhanced popup functionality
+    function showCorrectPopup(character) {
+      const popup = document.getElementById('popup');
+      popup.className = "popup correct";
+      
+      document.getElementById('popupMessage').innerText = "Excellent Work!";
+      document.getElementById('stars').innerHTML = '&#9733; &#9733; &#9733;';
+      document.getElementById('popupCharacter').innerText = character;
+      document.getElementById('popupContent').innerHTML = "Perfect! You've correctly drawn the<br>Devanagari character. Great job!";
+      
+      document.getElementById('overlay').style.display = 'block';
+      popup.style.display = 'block';
+      
+      setTimeout(closePopup, 3000); // Auto close after 3 seconds
+    }
+    
+    function showIncorrectPopup(predictedChar, expectedChar) {
+  const popup = document.getElementById('popup');
+  popup.className = "popup incorrect";
+  
+  document.getElementById('popupMessage').innerText = "Try Again!";
+  document.getElementById('stars').innerHTML = '&#9734; &#9734; &#9734;';
+  document.getElementById('popupCharacter').innerText = expectedChar;
+  document.getElementById('popupContent').innerHTML = `
+    Try to draw <strong>${expectedChar}</strong> more carefully.<br>
+    Let's practice more!
+  `;
+  
+  document.getElementById('overlay').style.display = 'block';
+  popup.style.display = 'block';
+  
+  setTimeout(closePopup, 3000); // Auto close after 3 seconds
+}
+
+    function closePopup() {
+      document.getElementById('overlay').style.display = 'none';
+      document.getElementById('popup').style.display = 'none';
+    }
+
+    
+  </script>
+</body>
+</html>

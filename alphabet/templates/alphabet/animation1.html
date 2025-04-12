@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hindi Alphabets Animation</title>
+    <style>
+        svg {
+            width: 200px;
+            height: 200px;
+        }
+
+        path {
+            fill: none;
+            stroke: blue;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+        }
+
+        .dot {
+            fill: red;
+        }
+
+        text {
+            font-size: 20px;
+            fill: blue;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<svg id="hindiLetter" viewBox="0 0 200 200">
+    <!-- Strokes dynamically inserted here -->
+</svg>
+
+<script>
+    const hindiLetters = {
+        "अ": [
+            { "id": "stroke1", "d": "M70,50 A50,35 0 1,1 70,120", "dot": [70,50], "text": [50,60] },
+            { "id": "stroke2", "d": "M70,120 A50,35 0 1,1 70,190", "dot": [70,120], "text": [85,150] },
+            { "id": "stroke3", "d": "M70,120 H140", "dot": [70,120], "text": [100,110] },
+            { "id": "stroke4", "d": "M140,50 V180", "dot": [140,50], "text": [145,40] },
+            { "id": "stroke5", "d": "M110,50 H170", "dot": [110,50], "text": [120,40] }
+        ],
+        
+        "आ": [
+            { "id": "stroke1", "d": "M70,50 A50,35 0 1,1 70,120", "dot": [70,50], "text": [50,60] },
+            { "id": "stroke2", "d": "M70,120 A50,35 0 1,1 70,190", "dot": [70,120], "text": [85,150] },
+            { "id": "stroke3", "d": "M70,120 H140", "dot": [70,120], "text": [100,110] },
+            { "id": "stroke4", "d": "M140,50 V180", "dot": [140,50], "text": [145,40] },
+            { "id": "stroke5", "d": "M110,50 H170", "dot": [110,50], "text": [120,40] },
+            { "id": "stroke6", "d": "M160,50 V180", "dot": [160,50], "text": [180,40] }
+        ],
+        "उ": [
+            { "id": "stroke1", "d": "M70,50 A50,35 0 1,1 70,120", "dot": [70,50], "text": [60,70] },
+            { "id": "stroke2", "d": "M70,120 A50,35 0 1,1 70,190", "dot": [70,120], "text": [85,150] },
+            { "id": "stroke3", "d": "M50,50 H170", "dot": [50,50], "text": [50,40] }
+        ],
+        "ऊ": [
+            { "id": "stroke1", "d": "M70,50 A50,35 0 1,1 70,120", "dot": [70,50], "text": [60,70] },
+            { "id": "stroke2", "d": "M70,120 A50,35 0 1,1 70,190", "dot": [70,120], "text": [85,150] },
+            { "id": "stroke3", "d": "M50,50 H170", "dot": [50,50], "text": [50,40] },
+            {"id": "stroke4", "d": "M70,120 C90,160 110,170 130,130", "dot": [70,120], "text": [100,150]}
+        ],
+        "ए": [
+            { "id": "stroke1", "d": "M130,50 V110", "dot": [130,50], "text": [145,40] },
+            { "id": "stroke2", "d": "M130,110 L200,170", "dot": [130,110], "text": [140,130] },
+            { "id": "stroke3", "d": "M190,50 V80", "dot": [190,50], "text": [200,40] },
+            { "id": "stroke4", "d": "M190,80 L175,100", "dot": [190,80], "text": [200,80] },
+            { "id": "stroke5", "d": "M110,50 H250", "dot": [110,50], "text": [120,40] },
+        ],
+        "ओ": [
+            { "id": "stroke1", "d": "M70,50 A50,35 0 1,1 70,120", "dot": [70,50], "text": [50,60] },
+            { "id": "stroke2", "d": "M70,120 A50,35 0 1,1 70,190", "dot": [70,120], "text": [85,150] },
+            { "id": "stroke3", "d": "M70,120 H140", "dot": [70,120], "text": [100,110] },
+            { "id": "stroke4", "d": "M140,50 V180", "dot": [140,50], "text": [145,40] },
+            { "id": "stroke5", "d": "M110,50 H170", "dot": [110,50], "text": [120,40] },
+            { "id": "stroke6", "d": "M160,50 V180", "dot": [160,50], "text": [170,40] },
+            { "id": "stroke7", "d": "M160,50 L100,20", "dot": [160,50], "text": [160,40] }
+        ],
+        "औ": [
+            { "id": "stroke1", "d": "M70,50 A50,35 0 1,1 70,120", "dot": [70,50], "text": [50,60] },
+            { "id": "stroke2", "d": "M70,120 A50,35 0 1,1 70,190", "dot": [70,120], "text": [85,150] },
+            { "id": "stroke3", "d": "M70,120 H140", "dot": [70,120], "text": [100,110] },
+            { "id": "stroke4", "d": "M140,50 V180", "dot": [140,50], "text": [145,40] },
+            { "id": "stroke5", "d": "M110,50 H170", "dot": [110,50], "text": [120,40] },
+            { "id": "stroke6", "d": "M160,50 V180", "dot": [160,50], "text": [170,40] },
+            { "id": "stroke7", "d": "M160,50 L100,20", "dot": [160,50], "text": [160,40] },
+            { "id": "stroke8", "d": "M160,50 L130,20", "dot": [160,50], "text": [150,30] }
+        ],
+        
+        "अं": [
+            { "id": "stroke1", "d": "M70,50 A50,35 0 1,1 70,120", "dot": [70,50], "text": [50,60] },
+            { "id": "stroke2", "d": "M70,120 A50,35 0 1,1 70,190", "dot": [70,120], "text": [85,150] },
+            { "id": "stroke3", "d": "M70,120 H140", "dot": [70,120], "text": [100,110] },
+            { "id": "stroke4", "d": "M140,50 V180", "dot": [140,50], "text": [145,40] },
+            { "id": "stroke5", "d": "M110,50 H170", "dot": [110,50], "text": [120,40] },
+            { "id": "stroke6", "d": "M125,25 A10,10 0 1,1 135,25", "dot": [130,25], "text": [130,15] } 
+        ],
+        "अः": [
+            { "id": "stroke1", "d": "M70,50 A50,35 0 1,1 70,120", "dot": [70,50], "text": [50,60] },
+            { "id": "stroke2", "d": "M70,120 A50,35 0 1,1 70,190", "dot": [70,120], "text": [85,150] },
+            { "id": "stroke3", "d": "M70,120 H140", "dot": [70,120], "text": [100,110] },
+            { "id": "stroke4", "d": "M140,50 V180", "dot": [140,50], "text": [145,40] },
+            { "id": "stroke5", "d": "M110,50 H170", "dot": [110,50], "text": [120,40] },
+            { "id": "stroke6", "d": "M160,170 A5,5 0 1,1 165,170", "dot": [160,170], "text": [155,165] },
+            { "id": "stroke7", "d": "M160,185 A5,5 0 1,1 165,185", "dot": [160,185], "text": [155,200] }
+        ],
+        "त": [
+            { "id": "stroke1", "d": "M150,30 L150,170", "dot": [150,30], "text": [155,25] },
+            { "id": "stroke2", "d": "M150,100 Q90,130 80,170", "dot": [150,100], "text": [115,65] },
+            { "id": "stroke3", "d": "M50,30 H300", "dot": [50,30], "text": [35,25] }
+        ],
+        "र": [
+            { "id": "stroke1", "d": "M100,30 A100,50 0 0,1 100,100", "dot": [100,30], "text": [105,25] },
+            { "id": "stroke2", "d": "M100,100 L130,150", "dot": [100,100], "text": [110,95] },
+            { "id": "stroke3", "d": "M50,30 H300", "dot": [50,30], "text": [55,45] }
+        ]
+
+
+    };
+    
+    function renderLetter(letter) {
+        let svg = document.getElementById("hindiLetter");
+        svg.innerHTML = "";
+        let strokes = hindiLetters[letter];
+        
+        strokes.forEach((stroke, index) => {
+            let dot = `<circle class='dot' cx='${stroke.dot[0]}' cy='${stroke.dot[1]}' r='5' />`;
+            let path = `<path id='${stroke.id}' d='${stroke.d}' />`;
+            let text = `<text x='${stroke.text[0]}' y='${stroke.text[1]}'>${index + 1}</text>`;
+            svg.innerHTML += dot + path + text;
+        });
+        
+        strokes.forEach((stroke, index) => {
+            animateStroke(stroke.id, index * 1000);
+        });
+    }
+    
+    function animateStroke(id, delay) {
+        setTimeout(() => {
+            let path = document.getElementById(id);
+            path.style.transition = "stroke-dashoffset 1s ease-in-out";
+            path.style.strokeDashoffset = "0";
+        }, delay);
+    }
+    
+    renderLetter("ए"); // Default letter on load
+</script>
+
+</body>
+</html>

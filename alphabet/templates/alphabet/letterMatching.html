@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hindi Letter Matching Game</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+  <style>
+    body {
+      font-family: 'Comic Sans MS', 'Arial', sans-serif;
+      background: url('/static/background.jpg') no-repeat center center/cover;
+      text-align: center;
+      padding: 50px;
+      position: relative;
+      height: 100vh;
+      overflow: hidden; 
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 20px; /* Rounder corners for friendlier look */
+      padding: 20px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      border: 6px solid #ffcc66; /* Yellow border - attracts attention */
+    }
+    h1 {
+      text-align: center;
+      color: #ff6b6b;
+      margin-bottom: 20px;
+      font-size: 46px; /* Larger text for better visibility */
+      text-shadow: 2px 2px #ffcc66;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    .letters-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px; /* More space between letters */
+      margin-bottom: 20px;
+      padding: 20px;
+      background-color: #fff9e6;
+      border-radius: 20px;
+      border: 4px dashed #ffd166;
+    }
+    .letter {
+      font-size: 42px; /* Larger text for better visibility */
+      font-weight: bold;
+      background-color: #4ecdc4;
+      color: white;
+      width: 80px; /* Larger target size */
+      height: 80px; /* Larger target size */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 15px;
+      cursor: move;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: 3px solid #3a9b94; /* Border to enhance visibility */
+    }
+    .letter:hover {
+      transform: translateY(-8px) scale(1.1); /* More pronounced hover effect */
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+    .image-boxes {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); /* Only 2 columns for larger targets */
+      gap: 30px; /* More space between items */
+    }
+    .image-box {
+      border: 4px solid #ffd166; /* Yellow border for attention */
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: white;
+      position: relative;
+      transition: transform 0.3s;
+    }
+    .image-box:hover {
+      transform: scale(1.03); /* Subtle hover effect */
+    }
+    .image-container {
+      width: 140px; /* Larger images */
+      height: 140px; /* Larger images */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .image-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .drop-area {
+      width: 80px; /* Larger drop area */
+      height: 80px; /* Larger drop area */
+      border: 4px dashed #ffd166; /* More visible border */
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff9e6; /* Light background to make it stand out */
+    }
+    .word-label {
+      font-size: 28px; /* Larger text */
+      font-weight: bold;
+      margin-top: 15px;
+      color: #333;
+    }
+    .drop-area.correct {
+      border-color: #6ECB63;
+      background-color: rgba(110, 203, 99, 0.2);
+    }
+    .drop-area.incorrect {
+      border-color: #FF6B6B;
+      background-color: rgba(255, 107, 107, 0.2);
+    }
+    .feedback-message {
+      text-align: center;
+      font-size: 32px; /* Larger text */
+      font-weight: bold;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 20px;
+      display: none;
+    }
+    .success-message {
+      color: #6ECB63;
+      background-color: rgba(110, 203, 99, 0.1);
+    }
+    .encouragement-message {
+      color: #ff9e00;
+      background-color: rgba(255, 158, 0, 0.1);
+    }
+    .restart-btn {
+      display: none;
+      background-color: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 28px; /* Larger text */
+      border-radius: 15px;
+      cursor: pointer;
+      margin: 20px auto;
+      transition: background-color 0.3s, transform 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .restart-btn:hover {
+      background-color: #ff5252;
+      transform: scale(1.1);
+    }
+    .score-container {
+      text-align: center;
+      font-size: 28px; /* Larger text */
+      margin: 20px 0;
+      color: #ff6b6b;
+      font-weight: bold;
+    }
+    .letter-clone {
+      position: absolute;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .home-btn {
+      display: block;
+      background-color: #4ecdc4;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 20px auto;
+      transition: background-color 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .home-btn:hover {
+      background-color: #3a9b94;
+    }
+    .sound-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #ffcc66;
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    /* Celebration animation */
+    @keyframes celebrate {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3) rotate(10deg); }
+      100% { transform: scale(1); }
+    }
+    .celebrate {
+      animation: celebrate 0.5s ease;
+    }
+    /* Simplified for young children - only 2 columns on all devices */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      h1 {
+        font-size: 36px;
+      }
+      .letter {
+        font-size: 36px;
+        width: 70px;
+        height: 70px;
+      }
+      .word-label {
+        font-size: 24px;
+      }
+    }
+    .back-arrow {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 40px; /* Increased size */
+      color: white;
+      background-color: #ff4500;
+      padding: 15px; /* Increased padding */
+      border-radius: 50%;
+      text-decoration: none;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      width: 70px; /* Increased width */
+      height: 70px; /* Increased height */
+    }
+    /* Hover effect */
+    .back-arrow:hover {
+      transform: scale(1.2);
+      background-color: #ff6347;
+    }
+    
+    /* NEW STYLES FOR VISUAL FEEDBACK */
+    /* Star animation */
+    .star {
+      position: absolute;
+      color: gold;
+      font-size: 30px;
+      animation: floatUp 2s ease-out forwards;
+      z-index: 100;
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+    
+    /* Confetti */
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      z-index: 99;
+      animation: confettiFall 4s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(500px) rotate(720deg); opacity: 0; }
+    }
+    
+    /* Happy character */
+    .character {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 150px;
+      height: 150px;
+      background-image: url('/static/character-neutral.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      z-index: 1000;
+      transition: transform 0.3s ease;
+    }
+    .character.happy {
+      background-image: url('/static/character-happy.png');
+      animation: jump 0.5s ease infinite alternate;
+    }
+    @keyframes jump {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-20px); }
+    }
+    
+    /* Glow effect for correct matches */
+    .glow {
+      animation: glowPulse 1.5s ease infinite;
+    }
+    @keyframes glowPulse {
+      0% { box-shadow: 0 0 5px 2px rgba(110, 203, 99, 0.5); }
+      50% { box-shadow: 0 0 20px 5px rgba(110, 203, 99, 0.8); }
+      100% { box-shadow: 0 0 5px 2px rgba(110, 203, 99, 0.5); }
+    }
+    
+    /* Rainbow effect for success */
+    .rainbow-text {
+      background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: rainbow 2s linear infinite;
+    }
+    @keyframes rainbow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+    
+    /* Trophy that appears on game completion */
+    .trophy {
+      font-size: 80px;
+      color: gold;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+      display: inline-block;
+      margin: 20px;
+      animation: trophy 0.5s ease infinite alternate;
+    }
+    @keyframes trophy {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
+    }
+  </style>
+</head>
+<body>
+  <a href="javascript:history.back()" class="back-arrow">
+    <i class="fas fa-arrow-left"></i>
+  </a>
+  
+  <!-- Character that reacts to correct matches -->
+  <div class="character" id="character"></div>
+  
+  <div class="container">
+    <h1>Match the letters!</h1>
+    <div class="score-container">
+      <span id="score">0</span> / <span id="totalItems">0</span> ⭐
+    </div>
+    <div class="game-container">
+      <div class="letters-container" id="letters-container">
+        <!-- Letters will be added here dynamically -->
+      </div>
+      <div class="image-boxes" id="image-boxes">
+        <!-- Images and drop areas will be added here dynamically -->
+      </div>
+    </div>
+    <div class="feedback-message success-message" id="success-message">
+      <span class="rainbow-text">Amazing! Good Job!</span>
+      <div class="trophy">🏆</div>
+    </div>
+    <div class="feedback-message encouragement-message" id="encouragement-message">
+      Keep Trying! You can do it! 🌟
+    </div>
+    <button class="restart-btn" id="restart-btn">Play again 🎮</button>
+    <button class="home-btn" id="home-btn">Home 🏠</button>
+  </div>
+
+  <script>
+    // Game data - Objects with their images and starting letters
+    const allGameItems = [
+      { word: 'आम', image: '/static/learn_objects/2-aa.jpg', letter: 'आ', displayName: 'आम' },
+      { word: 'इमली', image: '/static/objects/3-i.jpg', letter: 'इ', displayName: 'इमली' },
+      { word: 'उल्लू', image: '/static/learn_objects/3-u.jpg', letter: 'उ', displayName: 'उल्लू' },
+      { word: 'एकतर', image: '/static/learn_objects/5-e.jpg', letter: 'ए', displayName: 'एकतर' },
+      { word: 'ओखली', image: '/static/learn_objects/6-o.jpg', letter: 'ओ', displayName: 'ओखली' },
+      { word: 'चमच', image: '/static/test_objects/12-cha.jpeg', letter: 'च', displayName: 'चमच' }
+    ];
+
+    // Sound effects
+    const sounds = {
+      correct: new Audio('/static/sounds/correct.mp3'),
+      incorrect: new Audio('/static/sounds/incorrect.mp3'),
+      success: new Audio('/static/sounds/success.mp3'),
+      click: new Audio('/static/sounds/click.mp3')
+    };
+
+    // Game state variables
+    let gameItems = [];
+    let score = 0;
+    let draggedLetter = null;
+    let correctMatches = 0;
+    let attemptedAll = false;
+    let soundEnabled = true;
+    
+    // Colors for confetti
+    const confettiColors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#ff69b4'];
+
+    // Helper function to play sounds
+    function playSound(soundName) {
+      if (soundEnabled && sounds[soundName]) {
+        sounds[soundName].play();
+      }
+    }
+    
+    // Function to create and animate stars
+    function createStars(x, y, count = 5) {
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          const star = document.createElement('div');
+          star.className = 'star';
+          star.innerHTML = '★';
+          star.style.left = (x - 15 + Math.random() * 30) + 'px';
+          star.style.top = (y - 15 + Math.random() * 30) + 'px';
+          document.body.appendChild(star);
+          
+          // Remove star after animation completes
+          setTimeout(() => {
+            if (star.parentNode) {
+              document.body.removeChild(star);
+            }
+          }, 2000);
+        }, i * 100);
+      }
+    }
+    
+    // Function to create confetti
+    function createConfetti(count = 50) {
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * window.innerWidth + 'px';
+          confetti.style.top = '-10px';
+          confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+          confetti.style.width = (5 + Math.random() * 10) + 'px';
+          confetti.style.height = (5 + Math.random() * 10) + 'px';
+          confetti.style.animationDuration = (2 + Math.random() * 3) + 's';
+          document.body.appendChild(confetti);
+          
+          // Remove confetti after animation completes
+          setTimeout(() => {
+            if (confetti.parentNode) {
+              document.body.removeChild(confetti);
+            }
+          }, 4000);
+        }, i * 50);
+      }
+    }
+    
+    // Function to make the character happy
+    function makeCharacterHappy(duration = 3000) {
+      const character = document.getElementById('character');
+      character.classList.add('happy');
+      
+      setTimeout(() => {
+        character.classList.remove('happy');
+      }, duration);
+    }
+
+    // Initialize the game
+    function initGame() {
+      const lettersContainer = document.getElementById('letters-container');
+      const imageBoxesContainer = document.getElementById('image-boxes');
+      const scoreElement = document.getElementById('score');
+      const totalItemsElement = document.getElementById('totalItems');
+      
+      // Reset game state
+      score = 0;
+      correctMatches = 0;
+      attemptedAll = false;
+      scoreElement.textContent = score;
+      
+      // Hide messages and restart button
+      document.getElementById('success-message').style.display = 'none';
+      document.getElementById('encouragement-message').style.display = 'none';
+      document.getElementById('restart-btn').style.display = 'none';
+      
+      // Clear previous content
+      lettersContainer.innerHTML = '';
+      imageBoxesContainer.innerHTML = '';
+      
+      // Get only 2 items for toddlers (simpler game)
+      gameItems = [...allGameItems]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 2);
+      
+      // Set total items
+      totalItemsElement.textContent = gameItems.length;
+      
+      // Shuffle letters
+      const shuffledLetters = [...gameItems].sort(() => Math.random() - 0.5).map(item => item.letter);
+      
+      // Create letter elements
+      shuffledLetters.forEach(letter => {
+        const letterElement = document.createElement('div');
+        letterElement.className = 'letter';
+        letterElement.textContent = letter;
+        letterElement.setAttribute('draggable', 'true');
+        letterElement.addEventListener('dragstart', handleDragStart);
+        // Add touch support for mobile devices
+        letterElement.addEventListener('touchstart', handleTouchStart);
+        letterElement.addEventListener('touchmove', handleTouchMove);
+        letterElement.addEventListener('touchend', handleTouchEnd);
+        lettersContainer.appendChild(letterElement);
+      });
+      
+      // Create image boxes with drop areas
+      gameItems.forEach(item => {
+        const imageBox = document.createElement('div');
+        imageBox.className = 'image-box';
+        
+        const imageContainer = document.createElement('div');
+        imageContainer.className = 'image-container';
+        
+        const image = document.createElement('img');
+        image.src = item.image;
+        image.alt = item.word;
+        imageContainer.appendChild(image);
+        
+        const wordLabel = document.createElement('div');
+        wordLabel.className = 'word-label';
+        wordLabel.textContent = item.displayName;
+        
+        const dropArea = document.createElement('div');
+        dropArea.className = 'drop-area';
+        dropArea.dataset.correctLetter = item.letter;
+        dropArea.addEventListener('dragover', handleDragOver);
+        dropArea.addEventListener('drop', handleDrop);
+        
+        imageBox.appendChild(imageContainer);
+        imageBox.appendChild(dropArea);
+        imageBox.appendChild(wordLabel);
+        
+        imageBoxesContainer.appendChild(imageBox);
+      });
+    }
+
+    // Touch event handlers for mobile devices
+    let touchStartX, touchStartY;
+    let touchedElement = null;
+    
+    function handleTouchStart(e) {
+      const touch = e.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+      touchedElement = e.target;
+      
+      // Create visual feedback for touch
+      draggedLetter = touchedElement;
+      const clone = touchedElement.cloneNode(true);
+      clone.className = 'letter letter-clone';
+      clone.style.position = 'absolute';
+      clone.style.left = (touchStartX - 40) + 'px';
+      clone.style.top = (touchStartY - 40) + 'px';
+      clone.style.opacity = '0.7';
+      clone.style.zIndex = '1000';
+      document.body.appendChild(clone);
+      
+      playSound('click');
+      
+      // Prevent default to avoid scrolling
+      e.preventDefault();
+    }
+    
+    function handleTouchMove(e) {
+      if (!touchedElement) return;
+      
+      const touch = e.touches[0];
+      const clientX = touch.clientX;
+      const clientY = touch.clientY;
+      
+      // Move the clone
+      const clone = document.querySelector('.letter-clone');
+      if (clone) {
+        clone.style.left = (clientX - 40) + 'px';
+        clone.style.top = (clientY - 40) + 'px';
+      }
+      
+      // Prevent default to avoid scrolling
+      e.preventDefault();
+    }
+    
+    function handleTouchEnd(e) {
+      if (!touchedElement) return;
+      
+      const clone = document.querySelector('.letter-clone');
+      if (clone) {
+        // Get the position of the touch end
+        const touch = e.changedTouches[0];
+        const clientX = touch.clientX;
+        const clientY = touch.clientY;
+        
+        // Find if we're over a drop area
+        const dropAreas = document.querySelectorAll('.drop-area');
+        let targetDropArea = null;
+        
+        dropAreas.forEach(area => {
+          const rect = area.getBoundingClientRect();
+          if (
+            clientX >= rect.left && clientX <= rect.right &&
+            clientY >= rect.top && clientY <= rect.bottom &&
+            !area.hasChildNodes()
+          ) {
+            targetDropArea = area;
+          }
+        });
+        
+        // If we found a valid drop area, simulate a drop
+        if (targetDropArea) {
+          const correctLetter = targetDropArea.dataset.correctLetter;
+          const droppedLetter = touchedElement.textContent;
+          
+          // Create a new letter element in the drop area
+          const newLetterElement = document.createElement('div');
+          newLetterElement.className = 'letter';
+          newLetterElement.textContent = droppedLetter;
+          newLetterElement.style.transform = 'none';
+          targetDropArea.appendChild(newLetterElement);
+          
+          // Check if correct match
+          if (droppedLetter === correctLetter) {
+            targetDropArea.classList.add('correct');
+            score++;
+            correctMatches++;
+            document.getElementById('score').textContent = score;
+            playSound('correct');
+            
+            // NEW: Add visual feedback for correct match
+            newLetterElement.classList.add('celebrate');
+            targetDropArea.classList.add('glow');
+            
+            // Create stars around the correct match
+            const rect = targetDropArea.getBoundingClientRect();
+            createStars(rect.left + rect.width/2, rect.top + rect.height/2);
+            
+            // Make character happy
+            makeCharacterHappy();
+            
+            // Add celebration animation
+            newLetterElement.classList.add('celebrate');
+          } else {
+            targetDropArea.classList.add('incorrect');
+            playSound('incorrect');
+            
+            // Remove incorrect match after a delay
+            setTimeout(() => {
+              targetDropArea.innerHTML = '';
+              targetDropArea.classList.remove('incorrect');
+              // Return the letter to the letters container
+              touchedElement.style.visibility = 'visible';
+            }, 1500);
+          }
+          
+          // Hide the original dragged letter
+          touchedElement.style.visibility = 'hidden';
+          
+          // Check if all items have been attempted
+          let allAttempted = true;
+          dropAreas.forEach(area => {
+            if (!area.hasChildNodes()) {
+              allAttempted = false;
+            }
+          });
+          
+          if (allAttempted) {
+            attemptedAll = true;
+            checkResults();
+          }
+          
+          // If all correct, show success message
+          if (correctMatches === gameItems.length) {
+            setTimeout(showSuccessMessage, 800);
+          }
+        }
+        
+        // Remove the clone
+        document.body.removeChild(clone);
+      }
+      
+      touchedElement = null;
+    }
+
+    // Drag and drop event handlers
+    function handleDragStart(e) {
+      draggedLetter = e.target;
+      playSound('click');
+      
+      // Create a clone for visual feedback during drag
+      const clone = e.target.cloneNode(true);
+      clone.className = 'letter letter-clone';
+      clone.style.position = 'absolute';
+      clone.style.opacity = '0.7';
+      document.body.appendChild(clone);
+      
+      e.dataTransfer.setData('text/plain', e.target.textContent);
+      e.dataTransfer.effectAllowed = 'move';
+      
+      // Set the drag image to be invisible (we'll use our custom clone)
+      const invisibleEl = document.createElement('div');
+      invisibleEl.style.display = 'none';
+      document.body.appendChild(invisibleEl);
+      e.dataTransfer.setDragImage(invisibleEl, 0, 0);
+      
+      // Update clone position during drag
+      document.addEventListener('dragover', function(e) {
+        clone.style.left = (e.clientX - 40) + 'px';
+        clone.style.top = (e.clientY - 40) + 'px';
+      });
+      
+      // Remove clone when drag ends
+      document.addEventListener('dragend', function() {
+        if (clone.parentNode) {
+          document.body.removeChild(clone);
+        }
+        if (invisibleEl.parentNode) {
+          document.body.removeChild(invisibleEl);
+        }
+      }, { once: true });
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      
+      // Only allow drops if the area doesn't already have a letter
+      if (e.target.classList.contains('drop-area') && !e.target.hasChildNodes()) {
+        const droppedLetter = e.dataTransfer.getData('text/plain');
+        const correctLetter = e.target.dataset.correctLetter;
+        
+        // Create a new letter element in the drop area
+        const newLetterElement = document.createElement('div');
+        newLetterElement.className = 'letter';
+        newLetterElement.textContent = droppedLetter;
+        newLetterElement.style.transform = 'none';
+        e.target.appendChild(newLetterElement);
+        
+        // Check if correct match
+        if (droppedLetter === correctLetter) {
+          e.target.classList.add('correct');
+          score++;
+          correctMatches++;
+          document.getElementById('score').textContent = score;
+          playSound('correct');
+          
+          // NEW: Add visual feedback for correct match
+          newLetterElement.classList.add('celebrate');
+          e.target.classList.add('glow');
+          
+          // Create stars around the correct match
+          const rect = e.target.getBoundingClientRect();
+          createStars(rect.left + rect.width/2, rect.top + rect.height/2);
+          
+          // Make character happy
+          makeCharacterHappy();
+        } else {
+          e.target.classList.add('incorrect');
+          playSound('incorrect');
+          
+          // Remove incorrect match after a delay
+          setTimeout(() => {
+            e.target.innerHTML = '';
+            e.target.classList.remove('incorrect');
+            // Return the letter to the letters container
+            draggedLetter.style.visibility = 'visible';
+          }, 1500); // Longer delay for toddlers to see feedback
+        }
+        
+        // Hide the original dragged letter
+        if (draggedLetter) {
+          draggedLetter.style.visibility = 'hidden';
+        }
+        
+        // Check if all items have been attempted
+        const dropAreas = document.querySelectorAll('.drop-area');
+        let allAttempted = true;
+        
+        dropAreas.forEach(area => {
+          if (!area.hasChildNodes()) {
+            allAttempted = false;
+          }
+        });
+        
+        if (allAttempted) {
+          attemptedAll = true;
+          checkResults();
+        }
+        
+        // If all correct, show success message
+        if (correctMatches === gameItems.length) {
+          setTimeout(showSuccessMessage, 800);
+        }
+      }
+    }
+    
+    // Check results after all items are attempted
+    function checkResults() {
+      if (correctMatches === gameItems.length) {
+        showSuccessMessage();
+      } else {
+        showEncouragementMessage();
+      }
+    }
+
+    // Show success message with enhanced celebration
+    function showSuccessMessage() {
+      document.getElementById('success-message').style.display = 'block';
+      document.getElementById('restart-btn').style.display = 'block';
+      playSound('success');
+      
+      // NEW: Enhanced celebrations
+      celebrateSuccess();
+      createConfetti(100); // Create lots of confetti
+      makeCharacterHappy(6000); // Make character happy for longer
+    }
+    
+    // Show encouragement message
+    function showEncouragementMessage() {
+      document.getElementById('encouragement-message').style.display = 'block';
+      document.getElementById('restart-btn').style.display = 'block';
+      
+      // Create a few stars for encouragement
+      createStars(window.innerWidth / 2, window.innerHeight / 2, 3);
+    }
+    
+    // Function to celebrate success with multiple visual effects
+    function celebrateSuccess() {
+      // Add rainbow effect to all correct matches
+      const correctDropAreas = document.querySelectorAll('.drop-area.correct');
+      correctDropAreas.forEach(area => {
+        const letterInside = area.querySelector('.letter');
+        if (letterInside) {
+          letterInside.classList.add('rainbow-text');
+        }
+      });
+      
+      // Animate all image boxes
+      const imageBoxes = document.querySelectorAll('.image-box');
+      imageBoxes.forEach((box, index) => {
+        setTimeout(() => {
+          box.classList.add('celebrate');
+          setTimeout(() => {
+            box.classList.remove('celebrate');
+          }, 500);
+        }, index * 200);
+      });
+    }
+    
+    // Sound toggle function
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const soundBtn = document.getElementById('sound-btn');
+      soundBtn.innerHTML = soundEnabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+    }
+    
+    // Reset game on button click
+    document.getElementById('restart-btn').addEventListener('click', function() {
+      playSound('click');
+      initGame();
+    });
+    
+    // Home button functionality
+    document.getElementById('home-btn').addEventListener('click', function() {
+      playSound('click');
+      window.location.href = '/'; // Redirect to home page
+    });
+    
+    // Add a sound button to the UI
+    const soundBtn = document.createElement('button');
+    soundBtn.className = 'sound-btn';
+    soundBtn.id = 'sound-btn';
+    soundBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+    soundBtn.addEventListener('click', toggleSound);
+    document.body.appendChild(soundBtn);
+    
+    // Initialize the game on page load
+    window.addEventListener('load', initGame);
+  </script>
+</body>
+</html>

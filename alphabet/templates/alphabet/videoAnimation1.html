@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hindi Alphabet Learning System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .alphabet-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .letter {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .letter:hover {
+            background-color: #45a049;
+        }
+        #videoContainer {
+            margin-top: 20px;
+            width: 100%;
+        }
+        #currentLetter {
+            font-size: 24px;
+            margin: 15px 0;
+            min-height: 30px;
+        }
+        .instructions {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hindi Alphabet Learning System</h1>
+        
+        <div class="instructions">
+            <p>Click on any Hindi letter below to play the corresponding part of the YouTube video.</p>
+            <p>Different videos will play based on whether you select a vowel or consonant.</p>
+        </div>
+
+        <div id="currentLetter"></div>
+        
+        <div class="alphabet-container" id="alphabetContainer">
+            <!-- Hindi vowels -->
+            <div class="letter" data-type="vowel" data-start="27" data-end="44">अ</div>
+            <div class="letter" data-type="vowel" data-start="45" data-end="68">आ</div>
+            <!-- <div class="letter" data-type="vowel" data-start="70" data-end="90">इ</div> -->
+            <!-- <div class="letter" data-type="vowel" data-start="92" data-end="116">ई</div> -->
+            <div class="letter" data-type="vowel" data-start="117" data-end="133">उ</div>
+            <div class="letter" data-type="vowel" data-start="134" data-end="158">ऊ</div>
+            <!-- <div class="letter" data-type="vowel" data-start="161" data-end="188">ऋ</div> -->
+            <div class="letter" data-type="vowel" data-start="189" data-end="208">ए</div>
+            <!-- <div class="letter" data-type="vowel" data-start="210" data-end="235">ऐ</div> -->
+            <div class="letter" data-type="vowel" data-start="236" data-end="261">ओ</div>
+            <div class="letter" data-type="vowel" data-start="262" data-end="288">औ</div>
+            <div class="letter" data-type="vowel" data-start="289" data-end="319">अं</div>
+            <div class="letter" data-type="vowel" data-start="322" data-end="348">अः</div>
+            
+            <!-- Hindi consonants -->
+            <div class="letter" data-type="consonant" data-start="234" data-end="240">त</div>
+            <div class="letter" data-type="consonant" data-start="366" data-end="370">र</div>
+        </div>
+
+        <div id="videoContainer">
+            <div id="player"></div>
+        </div>
+    </div>
+
+    <script>
+        // YouTube API code
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        var vowelsVideoId = 'rmZKZg_9b9g'; // Video ID for vowels
+        var consonantsVideoId = 'Yvb3we9HMFo'; // Video ID for consonants - replace with your desired video ID
+        var currentVideoId = vowelsVideoId; // Default to vowels video
+        
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '360',
+                width: '640',
+                videoId: currentVideoId,
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 1,
+                    'rel': 0
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Player is ready
+            console.log('Player is ready');
+        }
+
+        // Add click event listeners to all letters
+        document.addEventListener('DOMContentLoaded', function() {
+            const letters = document.querySelectorAll('.letter');
+            const currentLetterElement = document.getElementById('currentLetter');
+            
+            letters.forEach(letter => {
+                letter.addEventListener('click', function() {
+                    // Get the letter type, start and end times from the data attributes
+                    const letterType = this.getAttribute('data-type');
+                    const startTime = parseInt(this.getAttribute('data-start'));
+                    const endTime = parseInt(this.getAttribute('data-end'));
+                    
+                    // Display the currently selected letter
+                    currentLetterElement.textContent = `Current Letter: ${this.textContent}`;
+                    
+                    // Choose the appropriate video based on letter type
+                    const videoId = letterType === 'vowel' ? vowelsVideoId : consonantsVideoId;
+                    
+                    // If the video needs to be changed, load the new video
+                    if (videoId !== currentVideoId) {
+                        currentVideoId = videoId;
+                        player.loadVideoById({
+                            videoId: videoId,
+                            startSeconds: startTime
+                        });
+                    } else {
+                        // If it's the same video, just seek to the correct time
+                        player.seekTo(startTime);
+                        player.playVideo();
+                    }
+                    
+                    // Set a timeout to pause the video when it reaches the end time
+                    setTimeout(() => {
+                        player.pauseVideo();
+                    }, (endTime - startTime) * 1000);
+                });
+            });
+        });
+
+        // Function to change the YouTube video
+        function changeVideo(videoId) {
+            currentVideoId = videoId;
+            player.loadVideoById(videoId);
+        }
+    </script>
+</body>
+</html>

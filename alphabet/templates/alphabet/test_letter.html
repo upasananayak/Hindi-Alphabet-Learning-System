@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Learn {{ letter }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('{% static "background.jpg" %}') no-repeat center center/cover;
+            text-align: center;
+            padding: 50px;
+            position: relative;
+            height: 100vh;
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 40px;
+            color: #fff;
+            background-color: #ff4500;
+            padding: 10px;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-arrow:hover {
+            transform: scale(1.2);
+            background-color: #ff6347; /* Slightly lighter on hover */
+        }
+
+        .container {
+            display: flex;
+            height: 100%;
+        }
+
+        .left-half {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .right-half {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .letter {
+            font-size: 100px; /* Increased font size */
+            font-weight: bold;
+            color: #ff4500;
+            margin-bottom: 20px;
+        }
+
+        .letter-image, .object-image {
+            width: 400px; /* Increased width */
+            height: auto; /* Maintain aspect ratio */
+            margin-bottom: 20px;
+        }
+
+        .button {
+            font-size: 24px;
+            color: #fff;
+            background-color: #ff4500;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .button:hover {
+            background-color: #e5533d;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 820px; /* Same width as images */
+            height: 820px; /* Combined height of two images */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            border: 1px solid #000;
+            width: 100%; /* Full width of container */
+            height: 100%; /* Full height of container */
+            background-color: #fff; /* White background */
+        }
+    </style>
+</head>
+<body>
+    <a href="javascript:history.back()" class="back-arrow">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <div class="container">
+        <div class="left-half">
+            <div class="letter"></div>
+            <img src="{% static letter_image.letter_path %}" alt="{{ letter }}" class="letter-image">
+            {% if letter_image.object_path %}
+                <img src="{% static letter_image.object_path %}" alt="Object for {{ letter }}" class="object-image">
+            {% endif %}
+            <a href="{% url 'letters' %}" class="button">Select Different Letter</a>
+        </div>
+        <div class="right-half">
+            <div class="canvas-container">
+                <canvas id="letterCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for handling the drawing
+        const canvas = document.getElementById('letterCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let drawing = false;
+        canvas.addEventListener('mousedown', () => drawing = true);
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mousemove', draw);
+
+        function draw(event) {
+            if (!drawing) return;
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#000';
+
+            ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+        }
+    </script>
+</body>
+</html>

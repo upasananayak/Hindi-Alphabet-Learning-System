@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hindi Learning Fun</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background: url('{% static "background.jpg" %}') no-repeat center center/cover;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        h1 {
+            color: #ff4500;
+            font-size: 72px;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px #ffa500;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .icon-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60vh;
+            gap: 40px;  /* Further reduced gap to fit four buttons */
+            flex-wrap: wrap; /* Allow wrapping if needed */
+            max-width: 900px; /* Control container width */
+            margin: 0 auto; /* Center the container */
+        }
+
+        .icon-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 8px solid;
+            border-radius: 30px;
+            padding: 25px;
+            width: 180px;  /* Smaller to fit four buttons */
+            height: 180px;  /* Smaller to fit four buttons */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .icon-button:hover, .icon-button:focus {
+            transform: scale(1.1);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .icon-learn {
+            border-color: #ff4500;
+        }
+
+        .icon-test {
+            border-color: #1e90ff;
+        }
+        
+        .icon-game {
+            border-color: #32CD32;  /* Green border for games */
+        }
+        
+        .icon-explore {
+            border-color: #9932CC;  /* Purple border for explore */
+        }
+
+        .icon-button i {
+            font-size: 70px;  /* Slightly smaller to fit better */
+            margin-bottom: 15px;
+        }
+
+        .icon-learn i {
+            color: #ff4500;
+        }
+
+        .icon-test i {
+            color: #1e90ff;
+        }
+        
+        .icon-game i {
+            color: #32CD32;  /* Green icon for games */
+        }
+        
+        .icon-explore i {
+            color: #9932CC;  /* Purple icon for explore */
+        }
+
+        .icon-label {
+            font-size: 32px;  /* Slightly smaller to fit */
+            font-weight: bold;
+            text-transform: uppercase;
+            color: inherit;
+        }
+
+        .icon-learn .icon-label {
+            color: #ff4500;
+        }
+
+        .icon-test .icon-label {
+            color: #1e90ff;
+        }
+        
+        .icon-game .icon-label {
+            color: #32CD32;  /* Green text for games */
+        }
+        
+        .icon-explore .icon-label {
+            color: #9932CC;  /* Purple text for explore */
+        }
+        
+        /* Audio button for accessibility */
+        .audio-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 40px;
+            background-color: #32CD32;
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border: none;
+            transition: transform 0.2s ease;
+        }
+        
+        .audio-button:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Hello!</h1>
+    
+    <div class="icon-container">
+        <a href="{% url 'letters' %}" class="icon-button icon-learn" onmouseover="playLearnAudio()">
+            <i class="fas fa-book-open"></i>
+            <span class="icon-label">Learn</span>
+        </a>
+        <a href="{% url 'test' %}" class="icon-button icon-test" onmouseover="playPracticeAudio()">
+            <i class="fas fa-pencil-alt"></i>
+            <span class="icon-label">Test</span>
+        </a>
+        <a href="{% url 'letter_matching' %}" class="icon-button icon-game" onmouseover="playGameAudio()">
+            <i class="fas fa-gamepad"></i>
+            <span class="icon-label">Play</span>
+        </a>
+        <a href="http://127.0.0.1:5050" class="icon-button icon-explore" onmouseover="playExploreAudio()">
+            <i class="fas fa-compass"></i>
+            <span class="icon-label">Explore</span>
+        </a>
+        <a href="{% url 'dashboard' %}" class="icon-button icon-dashboard" onmouseover="playDashboardAudio()">
+            <i class="fas fa-chart-line"></i>
+            <span class="icon-label">Dashboard</span>
+        </a>
+    </div>
+
+    <audio id="learnAudio" src="{% static 'Learn.mp3' %}" preload="auto"></audio>
+    <audio id="practiceAudio" src="{% static 'Practice.mp3' %}" preload="auto"></audio>
+    <audio id="gameAudio" src="{% static 'Game.mp3' %}" preload="auto"></audio>
+    <audio id="exploreAudio" src="{% static 'Explore.mp3' %}" preload="auto"></audio>
+
+    <script>
+        function playLearnAudio() {
+            const audio = document.getElementById('learnAudio');
+            audio.play();
+        }
+
+        function playPracticeAudio() {
+            const audio = document.getElementById('practiceAudio');
+            audio.play();
+        }
+        
+        function playGameAudio() {
+            const audio = document.getElementById('gameAudio');
+            audio.play();
+        }
+        
+        function playExploreAudio() {
+            const audio = document.getElementById('exploreAudio');
+            audio.play();
+        }
+    </script>
+</body>
+</html>

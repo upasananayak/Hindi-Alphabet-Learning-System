@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('/static/background.jpg') no-repeat center center/cover;
+            text-align: center;
+            padding: 50px;
+            position: relative;
+            height: 100vh;
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 40px;
+            color: #fff;
+            background-color: #ff4500;
+            padding: 10px;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-arrow:hover {
+            transform: scale(1.2);
+            background-color: #ff6347; /* Slightly lighter on hover */
+        }
+
+        h1 {
+            color: #ff4500;
+            font-size: 48px;
+            font-family: 'Comic Sans MS', sans-serif;
+            margin-bottom: 20px; /* Reduced gap */
+            text-shadow: 2px 2px #ffa500;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100% - 80px); /* Adjusted height to account for heading */
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 20px;
+            background-color: rgba(135, 206, 235, 0.8); /* Sky blue color with transparency */
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            width: 70%;
+            height: 70%;
+        }
+
+        .grid-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 5vw;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #ffcc00, #ff6699);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border: 5px solid white;
+        }
+
+        .grid-item a {
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .grid-item:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #ff6699, #ffcc00);
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(6, 1fr);
+            }
+            .grid-item {
+                font-size: 6vw;
+            }
+            .back-arrow {
+                font-size: 35px;
+                top: 15px;
+                left: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(12, 1fr);
+            }
+            .grid-item {
+                font-size: 8vw;
+            }
+            .back-arrow {
+                font-size: 30px;
+                top: 10px;
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-arrow">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <h1>CHOOSE A LETTER TO LEARN</h1>
+    <div class="container">
+        <div class="grid">
+            <div class="grid-item" onclick="learnLetter(1)">अ</div>
+            <div class="grid-item" onclick="learnLetter(2)">आ</div>
+            <div class="grid-item" onclick="learnLetter(3)">उ</div>
+            <div class="grid-item" onclick="learnLetter(4)">ऊ</div>
+            <div class="grid-item" onclick="learnLetter(5)">ए</div>
+            <div class="grid-item" onclick="learnLetter(6)">ओ</div>
+            <div class="grid-item" onclick="learnLetter(7)">औ</div>
+            <div class="grid-item" onclick="learnLetter(8)">अं</div>
+            <div class="grid-item" onclick="learnLetter(9)">अः</div>
+            <div class="grid-item" onclick="learnLetter(10)">त</div>
+            <div class="grid-item" onclick="learnLetter(11)">र</div>
+        </div>
+    </div>
+
+    <script>
+        function goHome() {
+            // Navigate to home page
+            window.location.href = '/';
+        }
+
+        function learnLetter(id) {
+            // Navigate to letter learning page
+            window.location.href = '/learn/' + id;
+            
+            // Update progress bar (for demo purposes)
+            document.getElementById('progress-indicator').style.width = (id * 8) + '%';
+        }
+
+        function learnStroke(id) {
+            // Navigate to letter learning page
+            window.location.href = '/learn_stroke/' + id;
+            
+            // Update progress bar (for demo purposes)
+            document.getElementById('progress-indicator').style.width = (id * 8) + '%';
+        }
+        // Auto-play sound for demo (would typically be triggered on click)
+        function playIntroSound() {
+            // This would be replaced with actual audio implementation
+            console.log("Playing welcome sound");
+        }
+
+        // Run on page load
+        window.onload = function() {
+            playIntroSound();
+            // Set initial progress
+            document.getElementById('progress-indicator').style.width = '0%';
+        }
+    </script>
+</body>
+</html>

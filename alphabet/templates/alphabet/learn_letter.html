@@ -1,0 +1,2059 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Learn {{ letter }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background: url('{% static "background.jpg" %}') no-repeat center center/cover;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 50px;
+            color: #fff;
+            background-color: #ff4500;
+            padding: 15px;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+        }
+
+        .back-arrow:hover {
+            transform: scale(1.2);
+            background-color: #ff6347;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 40px);
+            margin-top: 20px;
+        }
+
+        .left-half {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 30px;
+            margin-right: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .right-half {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 30px;
+            margin-left: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .letter {
+            font-size: 150px;
+            font-weight: bold;
+            color: #ff4500;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .letter-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .letter-image, .object-image {
+            width: 300px;
+            height: auto;
+            border-radius: 15px;
+            border: 5px solid #ff9900;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .letter-image:hover, .object-image:hover {
+            transform: scale(1.05);
+        }
+
+        .button {
+            font-size: 30px;
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            color: #fff;
+            background-color: #ff4500;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .button:hover {
+            background-color: #e5533d;
+            transform: scale(1.1);
+        }
+
+        .stroke-info {
+    margin-bottom: 20px; /* Increases the space below the instruction */
+    padding: 10px;
+    font-size: 18px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* Adjust the canvas container to accommodate the extra space */
+.canvas-container {
+    position: relative;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 50px; /* Creates gap between all elements */
+}
+
+/* Position the canvases with more space */
+#letterCanvas, #referenceImage {
+    margin-top: 10px;
+}
+        
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        
+        /* You can add these to your existing CSS */
+        #referenceImage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.3;
+        }
+    
+        canvas {
+            border: 5px dashed #ff9900;
+            width: 90%;
+            height: 100%;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            touch-action: none;
+        }
+
+        .drawing-tools {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            width: 90%;
+        }
+
+        .tool-button {
+            font-size: 24px;
+            color: #fff;
+            background-color: #1e90ff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .tool-button:hover {
+            transform: scale(1.1);
+        }
+
+        .color-tool {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            margin: 0 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+            border: 3px solid white;
+        }
+
+        .color-tool:hover {
+            transform: scale(1.2);
+        }
+
+        .color-black { background-color: #000; }
+        .color-red { background-color: #ff0000; }
+        .color-blue { background-color: #0000ff; }
+        .color-green { background-color: #008000; }
+
+        .audio-button {
+            font-size: 30px;
+            color: #fff;
+            background-color: #32CD32;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border: none;
+            z-index: 10;
+            transition: transform 0.2s ease;
+        }
+
+        .audio-button:hover {
+            transform: scale(1.1);
+        }
+
+        /* Popup styles */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 700px;
+            padding: 50px;
+            background-color: #fff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1000;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .popup h2 {
+            font-size: 70px;
+            margin-bottom: 20px;
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+        }
+
+        .popup .stars {
+            color: gold;
+            font-size: 120px;
+            margin-bottom: 30px;
+            animation: twinkle 1s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .popup .close-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 48px;
+            color: #ff4500;
+            cursor: pointer;
+        }
+
+        .popup .close-icon:hover {
+            color: #e5533d;
+            transform: scale(1.2);
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+
+        .popup-icons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .popup-icons a {
+            width: 80px;
+            height: 80px;
+            font-size: 40px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #ff4500;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .popup-icons a:hover {
+            transform: scale(1.1);
+            background-color: #e5533d;
+        }
+
+        .well-done {
+            color: #32CD32;
+        }
+
+        .try-again {
+            color: #FFA500;
+        }
+
+        .celebration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1001;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: confetti-fall 5s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .hint-button {
+            font-size: 30px;
+            color: #fff;
+            background-color: #9932CC;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        
+        .hint-button:hover {
+            background-color: #8B008B;
+            transform: scale(1.1);
+        }
+        
+        .instruction-bubble {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            border: 5px solid #1e90ff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e90ff;
+            max-width: 600px;
+            z-index: 900;
+            animation: float 3s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0px); }
+            50% { transform: translateX(-50%) translateY(-15px); }
+        }
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background: url('{% static "background.jpg" %}') no-repeat center center/cover;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 50px;
+            color: #fff;
+            background-color: #ff4500;
+            padding: 15px;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+        }
+
+        .back-arrow:hover {
+            transform: scale(1.2);
+            background-color: #ff6347;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 40px);
+            margin-top: 20px;
+        }
+
+        .left-half {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 30px;
+            margin-right: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .right-half {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 30px;
+            margin-left: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .letter {
+            font-size: 150px;
+            font-weight: bold;
+            color: #ff4500;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .letter-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .letter-image, .object-image {
+            width: 300px;
+            height: auto;
+            border-radius: 15px;
+            border: 5px solid #ff9900;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .letter-image:hover, .object-image:hover {
+            transform: scale(1.05);
+        }
+
+        .button {
+            font-size: 30px;
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            color: #fff;
+            background-color: #ff4500;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .button:hover {
+            background-color: #e5533d;
+            transform: scale(1.1);
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 40%;
+            height: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            border: 5px dashed #ff9900;
+            width: 90%;
+            height: 100%;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .drawing-tools {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            width: 90%;
+        }
+
+        .tool-button {
+            font-size: 24px;
+            color: #fff;
+            background-color: #1e90ff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .tool-button:hover {
+            transform: scale(1.1);
+        }
+
+        .color-tool {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            margin: 0 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+            border: 3px solid white;
+        }
+
+        .color-tool:hover {
+            transform: scale(1.2);
+        }
+
+        .color-black { background-color: #000; }
+        .color-red { background-color: #ff0000; }
+        .color-blue { background-color: #0000ff; }
+        .color-green { background-color: #008000; }
+
+        .audio-button {
+            font-size: 30px;
+            color: #fff;
+            background-color: #32CD32;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border: none;
+            z-index: 10;
+            transition: transform 0.2s ease;
+        }
+
+        .audio-button:hover {
+            transform: scale(1.1);
+        }
+
+        /* Popup styles */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 700px;
+            padding: 50px;
+            background-color: #fff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1000;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .popup h2 {
+            font-size: 70px;
+            margin-bottom: 20px;
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+        }
+
+        .popup .stars {
+            color: gold;
+            font-size: 120px;
+            margin-bottom: 30px;
+            animation: twinkle 1s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .popup .close-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 48px;
+            color: #ff4500;
+            cursor: pointer;
+        }
+
+        .popup .close-icon:hover {
+            color: #e5533d;
+            transform: scale(1.2);
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+
+        .popup-icons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .popup-icons a {
+            width: 80px;
+            height: 80px;
+            font-size: 40px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #ff4500;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .popup-icons a:hover {
+            transform: scale(1.1);
+            background-color: #e5533d;
+        }
+
+        .well-done {
+            color: #32CD32;
+        }
+
+        .try-again {
+            color: #FFA500;
+        }
+
+        .celebration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1001;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: confetti-fall 5s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .hint-button {
+            font-size: 30px;
+            color: #fff;
+            background-color: #9932CC;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        
+        .hint-button:hover {
+            background-color: #8B008B;
+            transform: scale(1.1);
+        }
+        
+        .instruction-bubble {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            border: 5px solid #1e90ff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e90ff;
+            max-width: 600px;
+            z-index: 900;
+            animation: float 3s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0px); }
+            50% { transform: translateX(-50%) translateY(-15px); }
+        }
+
+        /* Video container styles */
+        #videoContainer {
+            width: 90%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            border: 5px solid #ff9900;
+        }
+        
+        #player {
+            width: 100%;
+            height: 200px;
+            border-radius: 10px;
+        }
+        
+        .top-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .bottom-content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .letter-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.letter-image, .object-image {
+    width: 200px;
+    height: auto;
+    border-radius: 15px;
+    border: 5px solid #ff9900;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.letter-image:hover, .object-image:hover {
+    transform: scale(1.05);
+}
+
+#videoContainer {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    border: 5px solid #ff9900;
+}
+
+#player {
+    width: 100%;
+    height: 300px;
+    border-radius: 10px;
+}
+.left-half {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 30px;
+            margin-right: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        /* Video container styles */
+        #videoContainer {
+            width: 90%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            border: 5px solid #ff9900;
+        }
+        
+        #player {
+            width: 100%;
+            height: 200px;
+            border-radius: 10px;
+        }
+        
+        .top-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .bottom-content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .letter-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.letter-image, .object-image {
+    width: 200px;
+    height: auto;
+    border-radius: 15px;
+    border: 5px solid #ff9900;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.letter-image:hover, .object-image:hover {
+    transform: scale(1.05);
+}
+
+#videoContainer {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    border: 5px solid #ff9900;
+}
+
+#player {
+    width: 100%;
+    height: 300px;
+    border-radius: 10px;
+}
+    </style>
+</head>
+<body>
+    <a href="javascript:history.back()" class="back-arrow" title="Go Back">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    
+    
+
+    <div class="container">
+        <div class="left-half">
+            <div class="top-content">
+                <div class="letter" onclick="playLetterSound()"></div>
+                <div class="letter-container">
+                    <img src="{% static letter_image.letter_path %}" alt="{{ letter }}" class="letter-image" onclick="playLetterSound()">
+                    
+                </div>
+                {% if letter_image.object_path %}
+                <div class="letter-container">
+                    <img src="{% static letter_image.object_path %}" alt="Object for {{ letter }}" class="object-image" onclick="playObjectSound()">
+                    <button class="audio-button" onclick="playObjectSound()">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="bottom-content">
+                <div id="videoContainer">
+                    <div id="player"></div>
+                </div>
+                <a href="{% url 'letters' %}" class="button">
+                    <i class="fas fa-th-large"></i> Letters
+                </a>
+            </div>
+        </div>
+        <div class="right-half">
+            <div class="canvas-container">
+                <canvas id="letterCanvas"></canvas>
+                <canvas id="referenceImage"></canvas>
+                <div class="stroke-info" id="strokeInfo">Draw the strokes in sequence</div>
+                <div class="drawing-tools">
+                    <button class="tool-button" onclick="clearCanvas()">
+                        <i class="fas fa-trash-alt"></i> Clear
+                    </button>
+                    <div class="color-tool color-black" onclick="changeColor('#000')" title="Black"></div>
+                    <div class="color-tool color-red" onclick="changeColor('#ff0000')" title="Red"></div>
+                    <div class="color-tool color-blue" onclick="changeColor('#0000ff')" title="Blue"></div>
+                    <div class="color-tool color-green" onclick="changeColor('#008000')" title="Green"></div>
+                    <button class="tool-button" onclick="toggleReference()">
+                        <i class="fas fa-lightbulb"></i> Hint
+                    </button>
+                </div>
+            </div>
+            <button class="button" onclick="checkAllStrokes()" style="margin-top: 30px;">
+                <i class="fas fa-check-circle"></i> Done!
+            </button>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="popup">
+        <span class="close-icon" onclick="closePopup()">&times;</span>
+        <h2 id="popupMessage"></h2>
+        <div class="stars" id="stars"></div>
+        <div class="popup-icons" id="popupIcons"></div>
+    </div>
+    <div id="celebration" class="celebration"></div>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('letterCanvas');
+        const ctx = canvas.getContext('2d');
+        const refCanvas = document.getElementById('referenceImage');
+        const refCtx = refCanvas.getContext('2d');
+        const strokeInfoElement = document.getElementById('strokeInfo');
+        
+        let currentColor = '#000';
+        let drawing = false;
+        let isHintShowing = true; // Start with hint showing
+        let lastX = 0;
+        let lastY = 0;
+        let strokes = [];
+        let currentStroke = [];
+        let completedStrokes = [];
+        let nextStrokeToComplete = 0;
+        // let currentLetter = "अ"; // Set to Hindi letter 'a'
+        let currentLetter = "{{ letter }}"; // Use the letter passed from the view
+        console.log(currentLetter)
+        
+        // Define the strokes for Hindi letter 'अ' (a)
+        const letterData = {
+            "a.jpg": [
+                { 
+                    "id": "stroke1", 
+                    "d": "M70,50 A50,35 0 1,1 70,120", 
+                    "dot": [70,50], 
+                    "text": [50,60],
+                    "description": "Top curved stroke",
+                    "keyPoints": [[70, 50], [90, 65], [100, 85], [90, 105], [70, 120]]
+                },
+                { 
+                    "id": "stroke2", 
+                    "d": "M70,120 A50,35 0 1,1 70,190", 
+                    "dot": [70,120], 
+                    "text": [85,150],
+                    "description": "Bottom curved stroke",
+                    "keyPoints": [[70, 120], [90, 140], [100, 155], [90, 170], [70, 190]]
+                },
+                { 
+                    "id": "stroke3", 
+                    "d": "M70,120 H140", 
+                    "dot": [70,120], 
+                    "text": [100,110],
+                    "description": "Horizontal middle stroke",
+                    "keyPoints": [[70, 120], [105, 120], [140, 120]]
+                },
+                { 
+                    "id": "stroke4", 
+                    "d": "M140,50 V180", 
+                    "dot": [140,50], 
+                    "text": [145,40],
+                    "description": "Vertical right stroke",
+                    "keyPoints": [[140, 50], [140, 115], [140, 180]]
+                },
+                { 
+                    "id": "stroke5", 
+                    "d": "M110,50 H170", 
+                    "dot": [110,50], 
+                    "text": [120,40],
+                    "description": "Top horizontal stroke",
+                    "keyPoints": [[110, 50], [140, 50], [170, 50]]
+                }
+            ],
+            "aa.jpg": [
+                { 
+                    "id": "stroke1", 
+                    "d": "M70,50 A50,35 0 1,1 70,120", 
+                    "dot": [70,50], 
+                    "text": [50,60],
+                    "description": "Top curved stroke",
+                    "keyPoints": [[70, 50], [90, 65], [100, 85], [90, 105], [70, 120]]
+                },
+                { 
+                    "id": "stroke2", 
+                    "d": "M70,120 A50,35 0 1,1 70,190", 
+                    "dot": [70,120], 
+                    "text": [85,150],
+                    "description": "Bottom curved stroke",
+                    "keyPoints": [[70, 120], [90, 140], [100, 155], [90, 170], [70, 190]]
+                },
+                { 
+                    "id": "stroke3", 
+                    "d": "M70,120 H140", 
+                    "dot": [70,120], 
+                    "text": [100,110],
+                    "description": "Horizontal middle stroke",
+                    "keyPoints": [[70, 120], [105, 120], [140, 120]]
+                },
+                { 
+                    "id": "stroke4", 
+                    "d": "M140,50 V180", 
+                    "dot": [140,50], 
+                    "text": [145,40],
+                    "description": "Vertical first right stroke",
+                    "keyPoints": [[140, 50], [140, 115], [140, 180]]
+                },
+                { 
+                    "id": "stroke5", 
+                    "d": "M110,50 H170", 
+                    "dot": [110,50], 
+                    "text": [120,40],
+                    "description": "Top horizontal stroke",
+                    "keyPoints": [[110, 50], [140, 50], [170, 50]]
+                },
+                { 
+                    "id": "stroke6", 
+                    "d": "M160,50 V180", 
+                    "dot": [160,50], 
+                    "text": [180,40],
+                    "description": "Vertical second right stroke",
+                    "keyPoints": [[160, 50], [160, 115], [160, 180]]
+                }
+            ],
+            "u.jpg": [
+                { 
+                    "id": "stroke1", 
+                    "d": "M70,50 A50,35 0 1,1 70,120", 
+                    "dot": [70,50], 
+                    "text": [60,70],
+                    "description": "Top curved stroke",
+                    "keyPoints": [[70, 50], [90, 65], [100, 85], [90, 105], [70, 120]]
+                },
+                { 
+                    "id": "stroke2", 
+                    "d": "M70,120 A50,35 0 1,1 70,190", 
+                    "dot": [70,120], 
+                    "text": [85,150],
+                    "description": "Bottom curved stroke",
+                    "keyPoints": [[70, 120], [90, 140], [100, 155], [90, 170], [70, 190]]
+                },
+                { 
+                    "id": "stroke3", 
+                    "d": "M50,50 H170", 
+                    "dot": [50,50], 
+                    "text": [50,40],
+                    "description": "Top horizontal stroke",
+                    "keyPoints": [[50, 50], [110, 50], [170, 50]]
+                }
+            ],
+            "uu.jpg": [
+                { 
+                    "id": "stroke1", 
+                    "d": "M70,50 A50,35 0 1,1 70,120", 
+                    "dot": [70,50], 
+                    "text": [60,70],
+                    "description": "Top curved stroke",
+                    "keyPoints": [[70, 50], [90, 65], [100, 85], [90, 105], [70, 120]]
+                },
+                { 
+                    "id": "stroke2", 
+                    "d": "M70,120 A50,35 0 1,1 70,190", 
+                    "dot": [70,120], 
+                    "text": [85,150],
+                    "description": "Bottom curved stroke",
+                    "keyPoints": [[70, 120], [90, 140], [100, 155], [90, 170], [70, 190]]
+                },
+                { 
+                    "id": "stroke3", 
+                    "d": "M50,50 H170", 
+                    "dot": [50,50], 
+                    "text": [50,40],
+                    "description": "Top horizontal stroke",
+                    "keyPoints": [[50, 50], [110, 50], [170, 50]]
+                },
+                { 
+                    "id": "stroke4", 
+                    "d": "M70,120 A45,45 0 0,1 130,180", 
+                    "dot": [70,120], 
+                    "text": [100,180],
+                    "description": "Bottom right curved extension",
+                    "keyPoints": [[70, 120], [85, 140], [100, 160], [115, 175], [130, 180]]
+                }
+            ],
+            
+            "o.jpeg": [
+                { 
+                "id": "stroke1", 
+                "d": "M70,50 A50,35 0 1,1 70,120", 
+                "dot": [70,50], 
+                "text": [50,60],
+                "description": "Top curved stroke",
+                "keyPoints": [[70, 50], [90, 65], [100, 85], [90, 105], [70, 120]]
+                },
+                { 
+                "id": "stroke2", 
+                "d": "M70,120 A50,35 0 1,1 70,190", 
+                "dot": [70,120], 
+                "text": [85,150],
+                "description": "Bottom curved stroke",
+                "keyPoints": [[70, 120], [90, 140], [100, 155], [90, 170], [70, 190]]
+                },
+                { 
+                "id": "stroke3", 
+                "d": "M70,120 H140", 
+                "dot": [70,120], 
+                "text": [100,110],
+                "description": "Horizontal middle stroke",
+                "keyPoints": [[70, 120], [105, 120], [140, 120]]
+                },
+                { 
+                "id": "stroke4", 
+                "d": "M140,50 V180", 
+                "dot": [140,50], 
+                "text": [145,40],
+                "description": "Vertical first right stroke", 
+                "keyPoints": [[140, 50], [140, 115], [140, 180]]
+                },
+                { 
+                "id": "stroke5", 
+                "d": "M110,50 H170", 
+                "dot": [110,50], 
+                "text": [120,40],
+                "description": "Top horizontal stroke",
+                "keyPoints": [[110, 50], [140, 50], [170, 50]]
+                },
+                { 
+                "id": "stroke6", 
+                "d": "M160,50 V180", 
+                "dot": [160,50], 
+                "text": [170,40],
+                "description": "Vertical second right stroke",
+                "keyPoints": [[160, 50], [160, 115], [160, 180]]
+                },
+                { 
+                "id": "stroke7", 
+                "d": "M160,50 L100,20", 
+                "dot": [160,50], 
+                "text": [160,40],
+                "description": "Diagonal top stroke",
+                "keyPoints": [[160, 50], [130, 35], [100, 20]]
+                }
+            ],
+            
+            "ao.jpg": [
+                { 
+                "id": "stroke1", 
+                "d": "M70,50 A50,35 0 1,1 70,120", 
+                "dot": [70,50], 
+                "text": [50,60],
+                "description": "Top curved stroke",
+                "keyPoints": [[70, 50], [90, 65], [100, 85], [90, 105], [70, 120]]
+                },
+                { 
+                "id": "stroke2", 
+                "d": "M70,120 A50,35 0 1,1 70,190", 
+                "dot": [70,120], 
+                "text": [85,150],
+                "description": "Bottom curved stroke",
+                "keyPoints": [[70, 120], [90, 140], [100, 155], [90, 170], [70, 190]]
+                },
+                { 
+                "id": "stroke3", 
+                "d": "M70,120 H140", 
+                "dot": [70,120], 
+                "text": [100,110],
+                "description": "Horizontal middle stroke",
+                "keyPoints": [[70, 120], [105, 120], [140, 120]]
+                },
+                { 
+                "id": "stroke4", 
+                "d": "M140,50 V180", 
+                "dot": [140,50], 
+                "text": [145,40],
+                "description": "Vertical first right stroke",
+                "keyPoints": [[140, 50], [140, 115], [140, 180]]
+                },
+                { 
+                "id": "stroke5", 
+                "d": "M110,50 H170", 
+                "dot": [110,50], 
+                "text": [120,40],
+                "description": "Top horizontal stroke",
+                "keyPoints": [[110, 50], [140, 50], [170, 50]]
+                },
+                { 
+                "id": "stroke6", 
+                "d": "M160,50 V180", 
+                "dot": [160,50], 
+                "text": [170,40],
+                "description": "Vertical second right stroke",
+                "keyPoints": [[160, 50], [160, 115], [160, 180]]
+                },
+                { 
+                "id": "stroke7", 
+                "d": "M160,50 L100,20", 
+                "dot": [160,50], 
+                "text": [160,40],
+                "description": "First diagonal top stroke",
+                "keyPoints": [[160, 50], [130, 35], [100, 20]]
+                },
+                { 
+                "id": "stroke8", 
+                "d": "M160,50 L130,20", 
+                "dot": [160,50], 
+                "text": [150,30],
+                "description": "Second diagonal top stroke",
+                "keyPoints": [[160, 50], [145, 35], [130, 20]]
+                }
+            ],
+            
+            "ae.jpg": [
+                { 
+                "id": "stroke1", 
+                "d": "M130,50 V110", 
+                "dot": [130,50], 
+                "text": [145,40],
+                "description": "Vertical left stroke",
+                "keyPoints": [[130, 50], [130, 80], [130, 110]]
+                },
+                { 
+                "id": "stroke2", 
+                "d": "M130,110 L200,170", 
+                "dot": [130,110], 
+                "text": [140,130],
+                "description": "Diagonal stroke",
+                "keyPoints": [[130, 110], [165, 140], [200, 170]]
+                },
+                { 
+                "id": "stroke3", 
+                "d": "M190,50 V80", 
+                "dot": [190,50], 
+                "text": [200,40],
+                "description": "Vertical right stroke",
+                "keyPoints": [[190, 50], [190, 65], [190, 80]]
+                },
+                { 
+                "id": "stroke4", 
+                "d": "M190,80 L175,100", 
+                "dot": [190,80], 
+                "text": [200,80],
+                "description": "Small diagonal stroke",
+                "keyPoints": [[190, 80], [182, 90], [175, 100]]
+                },
+                { 
+                "id": "stroke5", 
+                "d": "M110,50 H250", 
+                "dot": [110,50], 
+                "text": [120,40],
+                "description": "Top horizontal stroke",
+                "keyPoints": [[110, 50], [180, 50], [250, 50]]
+                }
+            ],
+            
+            "am.jpg": [
+                { 
+                "id": "stroke1", 
+                "d": "M70,50 A50,35 0 1,1 70,120", 
+                "dot": [70,50], 
+                "text": [50,60],
+                "description": "Top curved stroke",
+                "keyPoints": [[70, 50], [90, 65], [100, 85], [90, 105], [70, 120]]
+                },
+                { 
+                "id": "stroke2", 
+                "d": "M70,120 A50,35 0 1,1 70,190", 
+                "dot": [70,120], 
+                "text": [85,150],
+                "description": "Bottom curved stroke",
+                "keyPoints": [[70, 120], [90, 140], [100, 155], [90, 170], [70, 190]]
+                },
+                { 
+                "id": "stroke3", 
+                "d": "M70,120 H140", 
+                "dot": [70,120], 
+                "text": [100,110],
+                "description": "Horizontal middle stroke",
+                "keyPoints": [[70, 120], [105, 120], [140, 120]]
+                },
+                { 
+                "id": "stroke4", 
+                "d": "M140,50 V180", 
+                "dot": [140,50], 
+                "text": [145,40],
+                "description": "Vertical right stroke",
+                "keyPoints": [[140, 50], [140, 115], [140, 180]]
+                },
+                { 
+                "id": "stroke5", 
+                "d": "M110,50 H170", 
+                "dot": [110,50], 
+                "text": [120,40],
+                "description": "Top horizontal stroke",
+                "keyPoints": [[110, 50], [140, 50], [170, 50]]
+                },
+                { 
+                "id": "stroke6", 
+                "d": "M125,25 A10,10 0 1,1 135,25", 
+                "dot": [130,25], 
+                "text": [130,15],
+                "description": "Anusvar dot",
+                "keyPoints": [[125, 25], [130, 15], [135, 25], [130, 35], [125, 25]]
+                } 
+            ],
+            
+            "aha.jpg": [
+                { 
+                "id": "stroke1", 
+                "d": "M70,50 A50,35 0 1,1 70,120", 
+                "dot": [70,50], 
+                "text": [50,60],
+                "description": "Top curved stroke",
+                "keyPoints": [[70, 50], [90, 65], [100, 85], [90, 105], [70, 120]]
+                },
+                { 
+                "id": "stroke2", 
+                "d": "M70,120 A50,35 0 1,1 70,190", 
+                "dot": [70,120], 
+                "text": [85,150],
+                "description": "Bottom curved stroke",
+                "keyPoints": [[70, 120], [90, 140], [100, 155], [90, 170], [70, 190]]
+                },
+                { 
+                "id": "stroke3", 
+                "d": "M70,120 H140", 
+                "dot": [70,120], 
+                "text": [100,110],
+                "description": "Horizontal middle stroke",
+                "keyPoints": [[70, 120], [105, 120], [140, 120]]
+                },
+                { 
+                "id": "stroke4", 
+                "d": "M140,50 V180", 
+                "dot": [140,50], 
+                "text": [145,40],
+                "description": "Vertical right stroke",
+                "keyPoints": [[140, 50], [140, 115], [140, 180]]
+                },
+                { 
+                "id": "stroke5", 
+                "d": "M110,50 H170", 
+                "dot": [110,50], 
+                "text": [120,40],
+                "description": "Top horizontal stroke",
+                "keyPoints": [[110, 50], [140, 50], [170, 50]]
+                },
+                { 
+                "id": "stroke6", 
+                "d": "M160,170 A5,5 0 1,1 165,170", 
+                "dot": [160,170], 
+                "text": [155,165],
+                "description": "Upper visarga dot",
+                "keyPoints": [[160, 170], [162.5, 165], [165, 170], [162.5, 175], [160, 170]]
+                },
+                { 
+                "id": "stroke7", 
+                "d": "M160,185 A5,5 0 1,1 165,185", 
+                "dot": [160,185], 
+                "text": [155,200],
+                "description": "Lower visarga dot",
+                "keyPoints": [[160, 185], [162.5, 180], [165, 185], [162.5, 190], [160, 185]]
+                }
+            ],
+            
+            "ta.jpg": [
+                { 
+                "id": "stroke1", 
+                "d": "M150,30 L150,170", 
+                "dot": [150,30], 
+                "text": [155,25],
+                "description": "Vertical stroke",
+                "keyPoints": [[150, 30], [150, 100], [150, 170]]
+                },
+                { 
+                "id": "stroke2", 
+                "d": "M150,100 Q90,130 80,170", 
+                "dot": [150,100], 
+                "text": [115,65],
+                "description": "Curved stroke",
+                "keyPoints": [[150, 100], [120, 120], [100, 140], [80, 170]]
+                },
+                { 
+                "id": "stroke3", 
+                "d": "M50,30 H300", 
+                "dot": [50,30], 
+                "text": [35,25],
+                "description": "Top horizontal stroke",
+                "keyPoints": [[50, 30], [175, 30], [300, 30]]
+                }
+            ],
+            
+            "ra.jpg": [
+                { 
+                "id": "stroke1", 
+                "d": "M100,30 A100,50 0 0,1 100,100", 
+                "dot": [100,30], 
+                "text": [105,25],
+                "description": "Curved top stroke",
+                "keyPoints": [[100, 30], [120, 50], [120, 80], [100, 100]]
+                },
+                { 
+                "id": "stroke2", 
+                "d": "M100,100 L130,150", 
+                "dot": [100,100], 
+                "text": [110,95],
+                "description": "Diagonal stroke",
+                "keyPoints": [[100, 100], [115, 125], [130, 150]]
+                },
+                { 
+                "id": "stroke3", 
+                "d": "M50,30 H300", 
+                "dot": [50,30], 
+                "text": [55,45],
+                "description": "Top horizontal stroke",
+                "keyPoints": [[50, 30], [175, 30], [300, 30]]
+                }
+            ]
+        };
+    
+    
+        // Set canvas size properly
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth || 400;
+            canvas.height = canvas.offsetHeight || 300;
+            refCanvas.width = canvas.width;
+            refCanvas.height = canvas.height;
+            
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = currentColor;
+            
+            // Draw reference
+            drawReference();
+        }
+        
+        // Initialize canvas
+        window.addEventListener('load', resizeCanvas);
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Add this function near the drawReference function
+        function checkLetterData() {
+            // Check if the current letter has defined stroke data
+            if (!letterData[currentLetter]) {
+                console.error(`No stroke data defined for letter: ${currentLetter}`);
+                console.log(currentLetter)
+                // Default to first letter as fallback
+                currentLetter = Object.keys(letterData)[0];
+                // Display a message to the user
+                strokeInfoElement.textContent = "Letter data not available. Using default letter.";
+                strokeInfoElement.className = "stroke-info incorrect";
+            }
+        }
+
+        // Create reference guide with dots for Hindi letter 'अ'
+        function drawReference() {
+            refCtx.clearRect(0, 0, refCanvas.width, refCanvas.height);
+            
+            const correctStrokes = letterData[currentLetter];
+            console.log(currentLetter)
+            
+            // Draw the dotted paths for each stroke
+            refCtx.strokeStyle = '#aaa';
+            refCtx.setLineDash([5, 5]);
+            refCtx.lineWidth = 2;
+            
+            correctStrokes.forEach(stroke => {
+                refCtx.beginPath();
+                const path = new Path2D(stroke.d);
+                refCtx.stroke(path);
+            });
+            
+            // Draw key points for each stroke with larger dots
+            refCtx.setLineDash([]);
+            correctStrokes.forEach((stroke, strokeIndex) => {
+                stroke.keyPoints.forEach((point, pointIndex) => {
+                    // Different color for the next stroke to complete
+                    if (strokeIndex === nextStrokeToComplete) {
+                        refCtx.fillStyle = "#4CAF50";  // Green for next stroke
+                    } else if (strokeIndex < nextStrokeToComplete) {
+                        refCtx.fillStyle = "#888";     // Gray for completed strokes
+                    } else {
+                        refCtx.fillStyle = "#444";     // Dark for future strokes
+                    }
+                    
+                    refCtx.beginPath();
+                    refCtx.arc(point[0], point[1], 5, 0, Math.PI * 2);
+                    refCtx.fill();
+                    
+                    // Add point number for the key points
+                    if (strokeIndex === nextStrokeToComplete) {
+                        refCtx.fillStyle = "#000";
+                        refCtx.font = "10px Arial";
+                        refCtx.fillText((pointIndex + 1).toString(), point[0] - 3, point[1] - 7);
+                    }
+                });
+                
+                // Add stroke number
+                refCtx.fillStyle = "#000";
+                refCtx.font = "12px Arial";
+                refCtx.fillText((strokeIndex + 1).toString(), stroke.text[0], stroke.text[1]);
+            });
+            
+            // Update stroke info text
+            if (nextStrokeToComplete < correctStrokes.length) {
+                strokeInfoElement.textContent = `Draw stroke ${nextStrokeToComplete + 1}: ${correctStrokes[nextStrokeToComplete].description}`;
+                strokeInfoElement.className = "stroke-info";
+            } else {
+                strokeInfoElement.textContent = "All strokes completed!";
+                strokeInfoElement.className = "stroke-info correct";
+            }
+        }
+        
+        // Drawing functionality
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('touchstart', handleTouchStart);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('touchend', stopDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('touchmove', handleTouchMove);
+        canvas.addEventListener('mouseout', stopDrawing);
+        
+        function startDrawing(event) {
+            drawing = true;
+            [lastX, lastY] = getCoordinates(event);
+            currentStroke = [[lastX, lastY]];
+            
+            ctx.strokeStyle = currentColor;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+        }
+        
+        function handleTouchStart(event) {
+            event.preventDefault();
+            if (event.touches.length === 1) {
+                const touch = event.touches[0];
+                const mouseEvent = new MouseEvent('mousedown', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            }
+        }
+        
+        function stopDrawing() {
+            if (!drawing) return;
+            drawing = false;
+            
+            if (currentStroke.length > 1) {
+                // Check the stroke against the expected next stroke
+                const result = checkStroke(currentStroke);
+                
+                // Add the stroke to the list with the result
+                strokes.push({
+                    points: currentStroke,
+                    correct: result.correct,
+                    message: result.message
+                });
+                
+                // Update the stroke info display
+                if (result.correct) {
+                    strokeInfoElement.textContent = result.message;
+                    strokeInfoElement.className = "stroke-info correct";
+                    
+                    // Draw the reference again to update the next stroke highlighting
+                    drawReference();
+                    playCelebrationSound(); // Play a small success sound
+                } else {
+                    strokeInfoElement.textContent = result.message;
+                    strokeInfoElement.className = "stroke-info incorrect";
+                    playEraseSound(); // Play error sound
+                }
+                
+                // Redraw all strokes with appropriate colors
+                drawAllStrokes();
+            }
+            
+            currentStroke = [];
+            ctx.beginPath();
+        }
+        
+        function draw(event) {
+            if (!drawing) return;
+            
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = currentColor;
+            
+            // Get the correct position
+            const [currentX, currentY] = getCoordinates(event);
+            
+            currentStroke.push([currentX, currentY]);
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+            
+            [lastX, lastY] = [currentX, currentY];
+        }
+        
+        function handleTouchMove(event) {
+            event.preventDefault();
+            if (event.touches.length === 1) {
+                const touch = event.touches[0];
+                const mouseEvent = new MouseEvent('mousemove', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            }
+        }
+        
+        // Get coordinates for both mouse and touch events
+        function getCoordinates(event) {
+            let x, y;
+            
+            if (event.type && event.type.includes('touch')) {
+                x = event.touches[0].clientX - canvas.getBoundingClientRect().left;
+                y = event.touches[0].clientY - canvas.getBoundingClientRect().top;
+            } else {
+                const rect = canvas.getBoundingClientRect();
+                x = event.clientX - rect.left;
+                y = event.clientY - rect.top;
+            }
+            
+            return [x, y];
+        }
+        
+        // Check if a drawn stroke passes near the key points for the next expected stroke
+        function checkStroke(drawnStroke) {
+            const correctStrokes = letterData[currentLetter];
+            
+            if (nextStrokeToComplete >= correctStrokes.length) {
+                return { correct: false, message: "All strokes already completed" };
+            }
+            
+            if (drawnStroke.length < 5) {
+                return { correct: false, message: "Stroke too short" };
+            }
+            
+            const correctStroke = correctStrokes[nextStrokeToComplete];
+            
+            // Check if starting point is close to expected starting point
+            const startPoint = drawnStroke[0];
+            const expectedStart = correctStroke.dot;
+            
+            const startDistance = Math.sqrt(
+                Math.pow(startPoint[0] - expectedStart[0], 2) + 
+                Math.pow(startPoint[1] - expectedStart[1], 2)
+            );
+            
+            // If starting point is too far, it's likely the wrong stroke
+            if (startDistance > 40) {
+                return { 
+                    correct: false, 
+                    message: `Incorrect starting point for stroke ${nextStrokeToComplete + 1}`
+                };
+            }
+            
+            // Check if the stroke passes near the key points
+            const keyPointsPassed = checkKeyPointsCovered(drawnStroke, correctStroke.keyPoints);
+            
+            if (keyPointsPassed.passed) {
+                nextStrokeToComplete++;
+                return { 
+                    correct: true, 
+                    message: `Correct! Stroke ${nextStrokeToComplete} completed.`
+                };
+            } else {
+                return { 
+                    correct: false, 
+                    message: `Try again - make sure to pass near all key points for stroke ${nextStrokeToComplete + 1}`
+                };
+            }
+        }
+        
+        // Check if a drawn stroke passes near all the key points
+        function checkKeyPointsCovered(drawnStroke, keyPoints) {
+            const threshold = 20; // Distance threshold for considering a point "passed"
+            const passedPoints = [];
+            
+            for (const keyPoint of keyPoints) {
+                let passed = false;
+                
+                // Check if any part of the drawn stroke comes close to this key point
+                for (const strokePoint of drawnStroke) {
+                    const distance = Math.sqrt(
+                        Math.pow(strokePoint[0] - keyPoint[0], 2) + 
+                        Math.pow(strokePoint[1] - keyPoint[1], 2)
+                    );
+                    
+                    if (distance < threshold) {
+                        passed = true;
+                        break;
+                    }
+                }
+                
+                passedPoints.push(passed);
+            }
+            
+            // Check if the majority of key points were passed near
+            const pointsPassed = passedPoints.filter(p => p).length;
+            const requiredPoints = Math.ceil(keyPoints.length * 0.6); // 60% of points must be passed
+            
+            return {
+                passed: pointsPassed >= requiredPoints,
+                pointsPassed: pointsPassed,
+                totalPoints: keyPoints.length
+            };
+        }
+        
+        // Draw all stored strokes on the canvas
+        function drawAllStrokes() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            strokes.forEach(stroke => {
+                if (stroke.correct) {
+                    ctx.strokeStyle = '#4CAF50';  // Green for correct
+                } else {
+                    ctx.strokeStyle = '#f44336';  // Red for incorrect
+                }
+                
+                ctx.lineWidth = 8;
+                ctx.beginPath();
+                ctx.moveTo(stroke.points[0][0], stroke.points[0][1]);
+                
+                for (let i = 1; i < stroke.points.length; i++) {
+                    ctx.lineTo(stroke.points[i][0], stroke.points[i][1]);
+                }
+                
+                ctx.stroke();
+            });
+        }
+        
+        function changeColor(color) {
+            currentColor = color;
+            playColorSound(color);
+        }
+        
+        function clearCanvas() {
+            strokes = [];
+            nextStrokeToComplete = 0;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawReference();
+            strokeInfoElement.textContent = `Draw stroke 1: ${letterData[currentLetter][0].description}`;
+            strokeInfoElement.className = "stroke-info";
+            playEraseSound();
+        }
+        
+        function toggleReference() {
+            isHintShowing = !isHintShowing;
+            if (isHintShowing) {
+                refCanvas.style.display = 'block';
+                drawReference();
+                playHintSound();
+            } else {
+                refCanvas.style.display = 'none';
+            }
+        }
+        
+        // Check if all strokes are completed correctly
+        function checkAllStrokes() {
+            if (nextStrokeToComplete >= letterData[currentLetter].length) {
+                showPopup('Well Done!', 'well-done');
+                playCelebrationSound();
+                createConfetti();
+            } else {
+                showPopup('Try Again!', 'try-again');
+            }
+        }
+    
+        // Popup functionality
+        function showPopup(message, messageClass) {
+            document.getElementById('popupMessage').innerText = message;
+            document.getElementById('popupMessage').className = messageClass;
+            
+            if (messageClass === 'well-done') {
+                document.getElementById('stars').innerHTML = '&#9733; &#9733; &#9733;';
+                document.getElementById('popupIcons').innerHTML = `
+                    <a href="#" title="Other letters"><i class="fas fa-th-large"></i></a>
+                    <a href="#" title="next letter"><i class="fas fa-arrow-right"></i></a>
+                    <a href="javascript:location.reload()" title="Try againpython"><i class="fas fa-redo"></i></a>
+                `;
+            } else {
+                document.getElementById('stars').innerHTML = '';
+                document.getElementById('popupIcons').innerHTML = `
+                    <a href="javascript:closePopup()" title="फिर से कोशिश करें"><i class="fas fa-redo"></i></a>
+                `;
+            }
+            
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('popup').style.display = 'block';
+        }
+    
+        function closePopup() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('celebration').innerHTML = '';
+        }
+    
+        // Create confetti celebration effect
+        function createConfetti() {
+            const confettiContainer = document.getElementById('celebration');
+            confettiContainer.innerHTML = '';
+            
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            
+            for(let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confettiContainer.appendChild(confetti);
+            }
+        }
+    
+        // Audio functions - these would be implemented with actual audio files
+        function playLetterSound() {
+            // Play letter pronunciation
+            console.log("Playing letter sound");
+            // Actual implementation would use: new Audio('/static/sounds/letter_{{ letter }}.mp3').play();
+        }
+        
+        function playObjectSound() {
+    try {
+        const audio = document.getElementById('objectSound');
+        if (audio) {
+            audio.currentTime = 0;
+            audio.play().catch(error => {
+                console.warn('Error playing object sound:', error);
+                // Fallback
+                new Audio(`/static/letter_audio/${currentLetter}.wav`).play().catch(e => 
+                    console.warn('Fallback object sound failed:', e));
+            });
+        } else {
+            // Fallback
+            new Audio(`/static/letters_audio/${currentLetter}.wav`).play().catch(error => 
+                console.warn('Fallback object sound failed:', error));
+        }
+        console.log(`Playing object sound for: ${currentLetter}`);
+    } catch (error) {
+        console.error('Error in playObjectSound:', error);
+    }
+}
+        
+        function playColorSound(color) {
+            // Play color selection sound
+            console.log("Playing color change sound");
+        }
+        
+        function playEraseSound() {
+            // Play erasing sound
+            console.log("Playing erase sound");
+        }
+        
+        function playHintSound() {
+            // Play hint sound
+            console.log("Playing hint sound");
+        }
+        
+        function playCelebrationSound() {
+            // Play celebration sound
+            console.log("Playing celebration sound");
+        }
+        
+        function playInstructions() {
+            // Play instruction audio
+            console.log("Playing instructions");
+        }
+        
+        // Position reference canvas on top of drawing canvas
+        // Position reference canvas correctly
+        // Auto-play letter sound when page loads
+        window.addEventListener('load', function() {
+            setTimeout(playLetterSound, 1000);
+        });
+        
+        // YouTube player variables
+        var player;
+        var videoId = "{{ video_id }}";
+        var startTime = {{ start_time }};
+        var endTime = {{ end_time }};
+
+        // Load the IFrame Player API code asynchronously.
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // Replace the 'player' element with an <iframe> and YouTube player after the API code downloads.
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '390',
+                width: '640',
+                videoId: videoId,
+                playerVars: {
+                    'start': startTime,
+                    'end': endTime,
+                    'autoplay': 1,
+                    'controls': 1,
+                    'mute':1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.ENDED) {
+                player.seekTo(startTime);
+            }
+        }
+        window.addEventListener('load', function() {
+            // Set canvas container to relative positioning
+            const canvasContainer = document.querySelector('.canvas-container');
+            canvasContainer.style.position = 'relative';
+            canvasContainer.style.height = `${canvas.height}px`; // Set explicit height
+            
+            // Position the reference canvas
+            refCanvas.style.position = 'absolute';
+            refCanvas.style.top = '0';
+            refCanvas.style.left = '0';
+            refCanvas.style.zIndex = '0';
+            refCanvas.style.opacity = '0.5';
+            
+            // Position the drawing canvas on top
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.zIndex = '1';
+            canvas.style.background = 'transparent';
+            
+            // Auto-play letter sound
+            setTimeout(playLetterSound, 1000);
+            
+            // Make sure drawing tools are outside the canvas container
+            const drawingTools = document.querySelector('.drawing-tools');
+            if (drawingTools) {
+                // Remove it from canvas container if it's there
+                if (canvasContainer.contains(drawingTools)) {
+                    canvasContainer.parentNode.insertBefore(drawingTools, canvasContainer.nextSibling);
+                }
+                
+                // Add margin to create space
+                drawingTools.style.marginTop = '20px';
+            }
+            
+            // Auto-play letter sound
+            setTimeout(playLetterSound, 1000);
+
+            // Check if we have stroke data for the current letter
+            checkLetterData();
+            
+            // Initialize the reference display
+            drawReference();
+        });
+    </script>
+
+</body>
+</html>
